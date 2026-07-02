@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My GitHub Flowchart</title>
+    
+    <!-- ดึง Mermaid.js จาก CDN เพื่อให้รันบนเว็บ GitHub ได้ -->
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ 
+            startOnLoad: true,
+            theme: 'default' // สามารถเปลี่ยนเป็น 'dark', 'forest', 'neutral' ได้
+        });
+    </script>
+
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #f6f8fa; /* สีพื้นหลังสไตล์ GitHub */
+            padding: 40px 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card {
+            background: #ffffff;
+            border: 1px solid #d0d7de;
+            border-radius: 6px;
+            padding: 24px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 3px 6px rgba(140,149,159,0.15);
+        }
+        h1 {
+            font-size: 20px;
+            color: #24292f;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #d0d7de;
+            padding-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1>ระบบตรวจเช็คโค้ดบน GitHub</h1>
+        
+        <!-- โค้ดสร้างโฟลว์ชาร์ต -->
+        <pre class="mermaid">
+            graph LR
+                A([เขียนโค้ดเสร็จ]) --> B[Push ขึ้น GitHub]
+                B --> C{เปิด GitHub Pages?}
+                C -- ใช่ --> D[หน้าเว็บออนไลน์ทันที!]
+                C -- ไม่ --> E[เปิดตั้งค่า Settings > Pages]
+                E --> D
+                D --> F([เสร็จสิ้น])
+        </pre>
+    </div>
+
+</body>
+</html>
