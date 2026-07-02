@@ -9,448 +9,484 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <style>
-* {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-    }
+        /* -------------------------------------------
+           1. DEFINE DESIGN CONSTANTS & CONFIGURATION
+        ------------------------------------------- */
+        :root {
+            --bg-color: #f8f9fa;
+            --text-primary: #1d1d1f;
+            --text-secondary: #86868b;
+            --accent-color: #0071e3;
+            --accent-light: #e8f2ff;
+            --card-bg: rgba(255, 255, 255, 0.85);
+            --card-border: rgba(0, 0, 0, 0.08);
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+            --shadow-md: 0 12px 30px rgba(0, 0, 0, 0.06);
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            --success-color: #34c759;
+        }
 
-    body {
-        font-family: var(--font-sans);
-        background-color: var(--bg-color);
-        color: var(--text-primary);
-        min-height: 100vh;
-        overflow-x: hidden;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 40px 20px;
-        -webkit-font-smoothing: antialiased;
-    }
-
-    header {
-        text-align: center;
-        max-width: 800px;
-        margin-bottom: 60px;
-        z-index: 10;
-    }
-
-    header h1 {
-        font-size: 2.2rem;
-        font-weight: 600;
-        letter-spacing: -0.02em;
-        margin-bottom: 12px;
-        color: var(--text-primary);
-    }
-
-    header p {
-        font-size: 1.1rem;
-        color: var(--text-secondary);
-        font-weight: 400;
-        line-height: 1.5;
-    }
-
-    .controls {
-        margin-top: 24px;
-        display: flex;
-        gap: 16px;
-        justify-content: center;
-    }
-
-    .btn {
-        background-color: var(--accent-color);
-        color: white;
-        border: none;
-        padding: 12px 24px;
-        font-size: 0.95rem;
-        font-weight: 500;
-        border-radius: 980px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .btn:hover {
-        background-color: #0077ed;
-        transform: translateY(-1px);
-        box-shadow: 0 6px 16px rgba(0, 113, 227, 0.3);
-    }
-
-    .btn:active {
-        transform: translateY(0);
-    }
-
-    .btn-secondary {
-        background-color: transparent;
-        color: var(--accent-color);
-        border: 1px solid var(--accent-color);
-        box-shadow: none;
-    }
-
-    .btn-secondary:hover {
-        background-color: var(--accent-light);
-        box-shadow: none;
-        transform: none;
-    }
-
-    .btn:disabled {
-        background-color: #d2d2d7;
-        color: #86868b;
-        box-shadow: none;
-        cursor: not-allowed;
-        border-color: transparent;
-    }
-
-    .pipeline-container {
-        position: relative;
-        width: 100%;
-        max-width: 1400px;
-        display: flex;
-        flex-direction: column;
-        gap: 80px;
-        margin-bottom: 100px;
-        padding: 0 40px;
-    }
-
-    .svg-overlay {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1;
-    }
-
-    .connection-path {
-        fill: none;
-        stroke: #d2d2d7;
-        stroke-width: 2px;
-        stroke-dasharray: 4 4;
-        transition: stroke 0.3s ease;
-    }
-
-    .connection-path.active {
-        stroke: var(--accent-color);
-        stroke-dasharray: none;
-    }
-
-    .branches-row {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 40px;
-        width: 100%;
-        position: relative;
-        z-index: 2;
-    }
-
-    .branch {
-        display: flex;
-        flex-direction: column;
-        gap: 48px;
-        align-items: center;
-        position: relative;
-    }
-
-    .branch-title {
-        font-size: 0.85rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        color: var(--text-secondary);
-        margin-bottom: -16px;
-        text-align: center;
-    }
-
-    .unified-section {
-        display: flex;
-        flex-direction: column;
-        gap: 48px;
-        align-items: center;
-        width: 100%;
-        position: relative;
-        z-index: 2;
-    }
-
-    .node-card {
-        background: var(--card-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border: 1px solid var(--card-border);
-        border-radius: 16px;
-        padding: 20px 24px;
-        width: 100%;
-        max-width: 320px;
-        box-shadow: var(--shadow-sm);
-        cursor: pointer;
-        transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
-        position: relative;
-        opacity: 0;
-        transform: scale(0.9) translateY(20px);
-        visibility: hidden;
-        user-select: none;
-    }
-
-    .node-card.visible {
-        opacity: 1;
-        transform: scale(1) translateY(0);
-        visibility: visible;
-    }
-
-    .node-card.active-node {
-        border-color: rgba(0, 113, 227, 0.4);
-        box-shadow: var(--shadow-md), 0 0 0 1px var(--accent-color);
-        background: #fff;
-    }
-
-    .node-card.active-node:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md), 0 4px 12px rgba(0, 113, 227, 0.15);
-    }
-
-    .node-header {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-    }
-
-    .node-icon {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        background: var(--bg-color);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: var(--text-secondary);
-        transition: background 0.3s, color 0.3s;
-        flex-shrink: 0;
-    }
-
-    .node-card.active-node .node-icon {
-        background: var(--accent-light);
-        color: var(--accent-color);
-    }
-
-    .node-info {
-        flex-grow: 1;
-        overflow: hidden;
-    }
-
-    .node-title {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 2px;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .node-subtitle {
-        font-size: 0.8rem;
-        color: var(--text-secondary);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    .node-badge {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 6px;
-        height: 6px;
-        border-radius: 50%;
-        background: transparent;
-    }
-
-    .node-card.active-node .node-badge {
-        background: var(--success-color);
-        box-shadow: 0 0 8px var(--success-color);
-    }
-
-    .hover-panel {
-        position: fixed;
-        width: 380px;
-        background: rgba(255, 255, 255, 0.96);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        border: 1px solid rgba(0, 0, 0, 0.1);
-        border-radius: 20px;
-        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-        padding: 24px;
-        z-index: 1000;
-        pointer-events: none;
-        opacity: 0;
-        transform: scale(0.95);
-        transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-    }
-
-    .hover-panel.visible {
-        opacity: 1;
-        transform: scale(1);
-        pointer-events: auto;
-    }
-
-    .panel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-        padding-bottom: 14px;
-    }
-
-    .panel-title h3 {
-        font-size: 1.15rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 2px;
-    }
-
-    .panel-title p {
-        font-size: 0.8rem;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        color: var(--accent-color);
-        font-weight: 600;
-    }
-
-    .panel-illustration {
-        width: 70px;
-        height: 50px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: var(--bg-color);
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    .panel-section-title {
-        font-size: 0.75rem;
-        font-weight: 700;
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        color: var(--text-secondary);
-        margin-bottom: 6px;
-    }
-
-    .panel-desc {
-        font-size: 0.88rem;
-        line-height: 1.45;
-        color: #3a3a3c;
-    }
-
-    .tech-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        background: var(--bg-color);
-        padding: 10px;
-        border-radius: 10px;
-        font-size: 0.8rem;
-    }
-
-    .tech-item span:first-child {
-        color: var(--text-secondary);
-        font-weight: 500;
-    }
-
-    .tech-item span:last-child {
-        color: var(--text-primary);
-        font-weight: 600;
-        margin-left: 4px;
-    }
-
-    .arch-flow {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        background: #fafafa;
-        padding: 12px;
-        border-radius: 10px;
-        border: 1px solid rgba(0,0,0,0.02);
-    }
-
-    .arch-step {
-        font-size: 0.78rem;
-        font-family: monospace;
-        background: white;
-        padding: 4px 10px;
-        border-radius: 4px;
-        border: 1px solid rgba(0,0,0,0.05);
-        width: 100%;
-        text-align: center;
-        box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-    }
-
-    .arch-arrow {
-        font-size: 0.7rem;
-        color: var(--text-secondary);
-    }
-
-    .panel-clinical {
-        font-size: 0.85rem;
-        line-height: 1.4;
-        color: #1c1c1e;
-        background: rgba(52, 199, 89, 0.06);
-        border-left: 3px solid var(--success-color);
-        padding: 8px 12px;
-        border-radius: 0 8px 8px 0;
-    }
-
-    @media (max-width: 1200px) {
-        .pipeline-container {
+        /* -------------------------------------------
+           2. GLOBAL STYLES & INTERFACES
+        ------------------------------------------- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
             padding: 0;
         }
-        .branches-row {
-            gap: 20px;
-        }
-    }
 
-    @media (max-width: 992px) {
-        .branches-row {
-            grid-template-columns: 1fr;
-            gap: 60px;
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            -webkit-font-smoothing: antialiased;
         }
-        .branch {
-            gap: 36px;
+
+        header {
+            text-align: center;
+            max-width: 800px;
+            margin-bottom: 60px;
+            z-index: 10;
         }
-        .svg-overlay {
-            display: none;
+
+        header h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            margin-bottom: 12px;
+            color: var(--text-primary);
         }
-        .node-card {
-            max-width: 100%;
+
+        header p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            line-height: 1.5;
         }
+
+        .controls {
+            margin-top: 24px;
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .btn {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            border-radius: 980px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background-color: #0077ed;
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px rgba(0, 113, 227, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background-color: transparent;
+            color: var(--accent-color);
+            border: 1px solid var(--accent-color);
+            box-shadow: none;
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--accent-light);
+            box-shadow: none;
+            transform: none;
+        }
+
+        .btn:disabled {
+            background-color: #d2d2d7;
+            color: #86868b;
+            box-shadow: none;
+            cursor: not-allowed;
+            border-color: transparent;
+        }
+
+        /* -------------------------------------------
+           3. PIPELINE RECOGNITION CONTAINER & OVERLAYS
+        ------------------------------------------- */
         .pipeline-container {
-            gap: 60px;
+            position: relative;
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            flex-direction: column;
+            gap: 80px;
+            margin-bottom: 100px;
+            padding: 0 40px;
         }
-        .unified-section::before, .branch::before {
-            content: '';
+
+        .svg-overlay {
             position: absolute;
             top: 0;
-            bottom: 0;
-            left: 50%;
-            width: 2px;
-            background: #d2d2d7;
-            z-index: -1;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
         }
-    }
 
-    @media (max-width: 480px) {
-        body { padding: 20px 10px; }
-        header h1 { font-size: 1.6rem; }
-        .hover-panel { width: calc(100vw - 20px); left: 10px !important; }
-    }
-</style>
+        .connection-path {
+            fill: none;
+            stroke: #d2d2d7;
+            stroke-width: 2px;
+            stroke-dasharray: 4 4;
+            transition: stroke 0.3s ease;
+        }
+
+        .connection-path.active {
+            stroke: var(--accent-color);
+            stroke-dasharray: none;
+        }
+
+        .branches-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .branch {
+            display: flex;
+            flex-direction: column;
+            gap: 48px;
+            align-items: center;
+            position: relative;
+        }
+
+        .branch-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: -16px;
+            text-align: center;
+        }
+
+        .unified-section {
+            display: flex;
+            flex-direction: column;
+            gap: 48px;
+            align-items: center;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+            margin-top: 40px;
+        }
+
+        /* -------------------------------------------
+           4. VISUALIZATION NODE CARDS
+        ------------------------------------------- */
+        .node-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 20px 24px;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: var(--shadow-sm);
+            cursor: pointer;
+            transition: border-color 0.3s, box-shadow 0.3s, transform 0.2s;
+            position: relative;
+            opacity: 0;
+            transform: scale(0.9) translateY(20px);
+            visibility: hidden;
+            user-select: none;
+        }
+
+        .node-card.visible {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            visibility: visible;
+        }
+
+        .node-card.active-node {
+            border-color: rgba(0, 113, 227, 0.4);
+            box-shadow: var(--shadow-md), 0 0 0 1px var(--accent-color);
+            background: #fff;
+        }
+
+        .node-card.active-node:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md), 0 4px 12px rgba(0, 113, 227, 0.15);
+        }
+
+        .node-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .node-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: var(--bg-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            transition: background 0.3s, color 0.3s;
+            flex-shrink: 0;
+        }
+
+        .node-card.active-node .node-icon {
+            background: var(--accent-light);
+            color: var(--accent-color);
+        }
+
+        .node-info {
+            flex-grow: 1;
+            overflow: hidden;
+        }
+
+        .node-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .node-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .node-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: transparent;
+        }
+
+        .node-card.active-node .node-badge {
+            background: var(--success-color);
+            box-shadow: 0 0 8px var(--success-color);
+        }
+
+        /* -------------------------------------------
+           5. FLOATING DETAIL PANEL HOVER ENTITY
+        ------------------------------------------- */
+        .hover-panel {
+            position: fixed;
+            width: 380px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+            padding: 24px;
+            z-index: 1000;
+            pointer-events: none;
+            opacity: 0;
+            transform: scale(0.95);
+            transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .hover-panel.visible {
+            opacity: 1;
+            transform: scale(1);
+            pointer-events: auto;
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            padding-bottom: 14px;
+        }
+
+        .panel-title h3 {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+
+        .panel-title p {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .panel-illustration {
+            width: 70px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .panel-section-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
+        .panel-desc {
+            font-size: 0.88rem;
+            line-height: 1.45;
+            color: #3a3a3c;
+        }
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            background: var(--bg-color);
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+
+        .tech-item span:first-child {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .tech-item span:last-child {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
+        .arch-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: #fafafa;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .arch-step {
+            font-size: 0.78rem;
+            font-family: monospace;
+            background: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            border: 1px solid rgba(0,0,0,0.05);
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+
+        .arch-arrow {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .panel-clinical {
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #1c1c1e;
+            background: rgba(52, 199, 89, 0.06);
+            border-left: 3px solid var(--success-color);
+            padding: 8px 12px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        /* -------------------------------------------
+           6. RESPONSIVE LAYER CONFIGURATIONS
+        ------------------------------------------- */
+        @media (max-width: 1200px) {
+            .pipeline-container {
+                padding: 0;
+            }
+            .branches-row {
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .branches-row {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+            .branch {
+                gap: 36px;
+            }
+            .svg-overlay {
+                display: none;
+            }
+            .node-card {
+                max-width: 100%;
+            }
+            .pipeline-container {
+                gap: 60px;
+            }
+            .unified-section::before, .branch::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 50%;
+                width: 2px;
+                background: #d2d2d7;
+                z-index: -1;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body { padding: 20px 10px; }
+            header h1 { font-size: 1.6rem; }
+            .hover-panel { width: calc(100vw - 20px); left: 10px !important; }
+        }
+    </style>
+</head>
+<body>
+
 <header>
     <h1>End-to-End Multi-Lead Framework Pipeline</h1>
     <p>An interactive validation of the multi-scale deeply fused hybrid framework for accurate electrocardiogram classification, mapped strictly from foundational architectural parameters.</p>
@@ -944,7 +980,7 @@
 
     function createPath(fromId, toId, pathUniqueId) {
         const svg = document.getElementById('pipeline-svg');
-        const newPath = document.createElementNS('[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)', 'path');
+        const newPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
         newPath.setAttribute('id', pathUniqueId);
         newPath.setAttribute('class', 'connection-path');
         svg.appendChild(newPath);
@@ -1169,7 +1205,7 @@
                             gsap.set(panel, {
                                 left: rect.right + 20,
                                 top: rect.top
-                            });
+                             });
                         }
                     }
                 });
@@ -1184,3 +1220,5 @@
         });
     }
 </script>
+</body>
+</html>
