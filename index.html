@@ -440,3 +440,736 @@
         .hover-panel { width: calc(100vw - 20px); left: 10px !important; }
     }
 </style>
+<header>
+    <h1>End-to-End Multi-Lead Framework Pipeline</h1>
+    <p>An interactive validation of the multi-scale deeply fused hybrid framework for accurate electrocardiogram classification, mapped strictly from foundational architectural parameters.</p>
+    <div class="controls">
+        <button class="btn" id="next-btn" onclick="revealNextNode()">
+            <span>Step Forward</span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+        <button class="btn btn-secondary" onclick="resetPipeline()">Reset Layout</button>
+    </div>
+</header>
+
+<main class="pipeline-container">
+    <svg class="svg-overlay" id="pipeline-svg"></svg>
+
+    <div class="branches-row">
+        <!-- BRANCH 1 -->
+        <div class="branch" id="branch-1">
+            <div class="branch-title">Lead II Processing</div>
+            <div class="node-card" id="node-b1-1" data-node="b1-1">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h3l2-7 4 14 3-10 2 3h6"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Raw Lead II Signal</div>
+                        <div class="node-subtitle">ECG Native Feed</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b1-2" data-node="b1-2">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Preprocessing</div>
+                        <div class="node-subtitle">Denoise &amp; Re-sampling</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b1-3" data-node="b1-3">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4M20 12H4M20 17H4"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Bandpass Filter</div>
+                        <div class="node-subtitle">0.5 Hz - 45 Hz Window</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b1-4" data-node="b1-4">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V3m18 18V3M7 12h10"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Segmentation</div>
+                        <div class="node-subtitle">Dynamic Cardiac Splitting</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b1-5" data-node="b1-5">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">CNN Feature Extraction</div>
+                        <div class="node-subtitle">Multi-Scale Deep Extraction</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b1-6" data-node="b1-6">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M14 6l6 6-6 6"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Feature Vector L-II</div>
+                        <div class="node-subtitle">Dimensional Embeddings</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BRANCH 2 -->
+        <div class="branch" id="branch-2">
+            <div class="branch-title">Lead V5 Processing</div>
+            <div class="node-card" id="node-b2-1" data-node="b2-1">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h3l2-7 4 14 3-10 2 3h6"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Raw Lead V5 Signal</div>
+                        <div class="node-subtitle">Anterior Wall Profile</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b2-2" data-node="b2-2">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Preprocessing</div>
+                        <div class="node-subtitle">Baseline Wander Fix</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b2-3" data-node="b2-3">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4M20 12H4M20 17H4"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Bandpass Filter</div>
+                        <div class="node-subtitle">Digital Isolation Filtering</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b2-4" data-node="b2-4">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V3m18 18V3M7 12h10"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Segmentation</div>
+                        <div class="node-subtitle">R-Peak Fixed Windows</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b2-5" data-node="b2-5">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Mamba Architecture</div>
+                        <div class="node-subtitle">Selective State Space</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b2-6" data-node="b2-6">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M14 6l6 6-6 6"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Feature Vector V5</div>
+                        <div class="node-subtitle">Long-Range Projections</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BRANCH 3 -->
+        <div class="branch" id="branch-3">
+            <div class="branch-title">Lead aVF Processing</div>
+            <div class="node-card" id="node-b3-1" data-node="b3-1">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h3l2-7 4 14 3-10 2 3h6"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Raw Lead aVF Signal</div>
+                        <div class="node-subtitle">Inferior Vector Intake</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b3-2" data-node="b3-2">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Preprocessing</div>
+                        <div class="node-subtitle">High-Frequency Trimming</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b3-3" data-node="b3-3">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4M20 12H4M20 17H4"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Bandpass Filter</div>
+                        <div class="node-subtitle">Phase-Preserving Pass</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b3-4" data-node="b3-4">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V3m18 18V3M7 12h10"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Segmentation</div>
+                        <div class="node-subtitle">Isoelectric Normalization</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b3-5" data-node="b3-5">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="12" cy="19" r="2"/><path d="M12 7v10M7 12h10"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">MLP Architecture</div>
+                        <div class="node-subtitle">Dense Linear Modality</div>
+                    </div>
+                </div>
+            </div>
+            <div class="node-card" id="node-b3-6" data-node="b3-6">
+                <div class="node-badge"></div>
+                <div class="node-header">
+                    <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M14 6l6 6-6 6"/></svg></div>
+                    <div class="node-info">
+                        <div class="node-title">Feature Vector aVF</div>
+                        <div class="node-subtitle">Fully Connected Mapping</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- UNIFIED BACKEND -->
+    <div class="unified-section">
+        <div class="node-card" id="node-u-1" data-node="u-1">
+            <div class="node-badge"></div>
+            <div class="node-header">
+                <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v12M6 12h12"/></svg></div>
+                <div class="node-info">
+                    <div class="node-title">Feature Fusion Module</div>
+                    <div class="node-subtitle">Cross-Lead Vector Union</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="node-card" id="node-u-2" data-node="u-2">
+            <div class="node-badge"></div>
+            <div class="node-header">
+                <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+                <div class="node-info">
+                    <div class="node-title">Classification Head</div>
+                    <div class="node-subtitle">Dense Projections &amp; Softmax</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="node-card" id="node-u-3" data-node="u-3">
+            <div class="node-badge"></div>
+            <div class="node-header">
+                <div class="node-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></div>
+                <div class="node-info">
+                    <div class="node-title">Diagnostic Prediction</div>
+                    <div class="node-subtitle">Final Patient Assessment</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- FLOATING INFORMATION PANEL -->
+<div class="hover-panel" id="info-panel">
+    <div class="panel-header">
+        <div class="panel-title">
+            <h3 id="p-title">Node Title</h3>
+            <p id="p-subtitle">Category</p>
+        </div>
+        <div class="panel-illustration" id="p-illustration"></div>
+    </div>
+    <div>
+        <div class="panel-section-title">Description</div>
+        <p class="panel-desc" id="p-desc">Plain English description goes here.</p>
+    </div>
+    <div>
+        <div class="panel-section-title">Technical Details</div>
+        <div class="tech-grid" id="p-tech"></div>
+    </div>
+    <div>
+        <div class="panel-section-title">Architecture</div>
+        <div class="arch-flow" id="p-arch"></div>
+    </div>
+    <div>
+        <div class="panel-section-title">Clinical Purpose</div>
+        <div class="panel-clinical" id="p-clinical">Clinical relevance breakdown.</div>
+    </div>
+</div>
+
+<script>
+    // Node sequence processing definition
+    const nodeOrder = [
+        'b1-1', 'b1-2', 'b1-3', 'b1-4', 'b1-5', 'b1-6', // Branch 1 complete
+        'b2-1', 'b2-2', 'b2-3', 'b2-4', 'b2-5', 'b2-6', // Branch 2 complete
+        'b3-1', 'b3-2', 'b3-3', 'b3-4', 'b3-5', 'b3-6', // Branch 3 complete
+        'u-1', 'u-2', 'u-3'                             // Global unified stages
+    ];
+
+    let currentStepIndex = -1;
+
+    // Content Specifications matching research criteria
+    const nodeMetadata = {
+        'b1-1': {
+            title: 'Raw Lead II Signal', type: 'Data Intake',
+            desc: 'Continuous real-time physiological signal feed captured from standard Lead II alignment, measuring dominant vertical depolarization pathways.',
+            tech: { 'Input Shape': '1 x 5000', 'Output Shape': '1 x 5000', 'Data Type': 'Float32', 'Sampling Rate': '500 Hz' },
+            arch: ['Analog Sensor Output', 'ADC Quantization', 'Raw Array Streaming'],
+            clinical: 'Lead II reflects the primary inferior electrical vector of the ventricles, crucial for baseline heart rhythm assessment and clear P-wave resolution.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#0071e3" stroke-width="1.5"><path d="M0 20 h15 l2 -6 l3 16 l2 -14 l2 4 h16" stroke-linecap="round"/><animate attributeName="stroke-dashoffset" values="40;0" dur="2s" repeatCount="indefinite"/></svg>`
+        },
+        'b1-2': {
+            title: 'Preprocessing (Lead II)', type: 'Signal Cleaning',
+            desc: 'Digital baseline rectification and normalization routines engineered to eradicate environmental interference and electrical drift.',
+            tech: { 'Method': 'Z-Score Normalization', 'Artifact Guard': 'Median Filter', 'Precision': 'FP32', 'Batch Size': 'Dynamic' },
+            arch: ['Zero-Mean Centering', 'Unit Variance Scale', 'High-Pass DC Block'],
+            clinical: 'Eliminates somatic muscle noise, powerline hum, and respiratory tracking shifts to guarantee the neural network isolates actual cellular actions.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#0071e3" stroke-width="1.5"><path d="M0 20 h10 l1 -4 l2 10 l1 -8 l1 2 h5 l1 -4 l2 10 l1 -8 l1 2 h20"/></svg>`
+        },
+        'b1-3': {
+            title: 'Bandpass Filter', type: 'Frequency Isolation',
+            desc: 'A Zero-Phase Digital Infinite Impulse Response (IIR) filtering suite to cleanly partition target physiological frequency domains.',
+            tech: { 'Low Cutoff': '0.5 Hz', 'High Cutoff': '45 Hz', 'Filter Type': 'Butterworth 4th Order', 'Phase Shift': '0.0' },
+            arch: ['Forward Filtering Pass', 'Time Reverse Vector', 'Backward Filtering Pass'],
+            clinical: 'Isolates the absolute functional spectrum of structural cardiac components while filtering out out-of-band high-frequency muscular interference.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#0071e3" stroke-width="1.5"><path d="M5 35 Q 20 5, 40 5 T 55 35" stroke-dasharray="2 2"/></svg>`
+        },
+        'b1-4': {
+            title: 'Segmentation', type: 'Dimensional Partition',
+            desc: 'Automated sliding-window framework anchored by localizing R-peaks to isolate distinct cardiac beats into structured arrays.',
+            tech: { 'Window Size': '1000 samples', 'Overlap Rate': '20%', 'Center Rule': 'R-Peak Offset', 'Target Leads': 'Independent' },
+            arch: ['Pan-Tompkins Tracking', 'Peak Coordinate Cut', 'Array Stack Processing'],
+            clinical: 'Normalizes macro temporal events into distinct matrices, facilitating comparative morphology parsing within individual localized complexes.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#0071e3" stroke-width="1.5"><rect x="5" y="5" width="16" height="30" rx="3" fill="none"/><rect x="22" y="5" width="16" height="30" rx="3" fill="none"/><rect x="39" y="5" width="16" height="30" rx="3" fill="none"/></svg>`
+        },
+        'b1-5': {
+            title: 'CNN Feature Extractor', type: 'Deep Representation',
+            desc: 'Multi-scale convolutional blocks engineered to concurrently learn spatial microstructures and temporal dynamics across varied kernel breadths.',
+            tech: { 'Kernels': '1D Conv [3, 5, 7]', 'Channels Out': '128', 'Activation': 'Swish', 'Pooling': 'Max Pooling 1D' },
+            arch: ['Conv1D Multi-Scale', 'Batch Normalization', 'Swish Activation', 'Max Pooling 1D'],
+            clinical: 'Automates advanced morphological pattern parsing, replacing manual engineering of ST-segment variations and QRS configurations.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#0071e3" stroke-width="1.5"><rect x="5" y="10" width="12" height="20" rx="2"/><rect x="22" y="12" width="12" height="16" rx="2"/><rect x="39" y="14" width="12" height="12" rx="2"/></svg>`
+        },
+        'b1-6': {
+            title: 'Feature Vector L-II', type: 'Latent Embedding',
+            desc: 'Flattened, densely projected multidimensional space embodying all structural patterns derived exclusively from Lead II inputs.',
+            tech: { 'Vector Dimensions': '256', 'Sparsity Metric': 'L2 Reg', 'Dropout Apply': '0.15', 'Normalization': 'LayerNorm' },
+            arch: ['Global Average Pool', 'Linear Projection', 'Layer Normalization'],
+            clinical: 'Compacts complex visual architectural morphologies into structured mathematical formats for downstream multi-view integration.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#0071e3" stroke-width="1.5"><line x1="10" y1="20" x2="50" y2="20" stroke-dasharray="4 2"/><circle cx="15" cy="20" r="3"/><circle cx="30" cy="20" r="3"/><circle cx="45" cy="20" r="3"/></svg>`
+        },
+        'b2-1': {
+            title: 'Raw Lead V5 Signal', type: 'Data Intake',
+            desc: 'Continuous precordial voltage tracking streaming directly from the lateral anterior chest configuration.',
+            tech: { 'Input Shape': '1 x 5000', 'Output Shape': '1 x 5000', 'Data Type': 'Float32', 'Placement': '5th Intercostal' },
+            arch: ['Precordial Node Input', 'ADC Conversion', 'Voltage Time Series'],
+            clinical: 'V5 focuses intensely on the thick left ventricular muscle walls, making it highly sensitive to ischemic changes and left-side conduction issues.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#34c759" stroke-width="1.5"><path d="M0 20 h10 l3 -10 l2 25 l3 -20 l1 5 h21"/></svg>`
+        },
+        'b2-2': {
+            title: 'Preprocessing (Lead V5)', type: 'Signal Cleaning',
+            desc: 'Targeted filtering optimized to strip erratic shifting elements from the localized chest lead trace.',
+            tech: { 'Method': 'Median Filter Cascade', 'Window 1': '200ms', 'Window 2': '600ms', 'Target': 'Baseline Drift' },
+            arch: ['Baseline Trend Estimation', 'Subtractive Correction', 'Amplitude Scaling'],
+            clinical: 'Prevents breathing cycle mechanics from misaligning the absolute ST-segment positions relative to the correct baseline.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#34c759" stroke-width="1.5"><path d="M5 20 h50 M5 12 h50 M5 28 h50" stroke-dasharray="2 4"/></svg>`
+        },
+        'b2-3': {
+            title: 'Bandpass Filter (V5)', type: 'Frequency Isolation',
+            desc: 'Linear phase digital filtering ensuring structural features are preserved without introducing artificial temporal phase errors.',
+            tech: { 'Low Pass': '45 Hz', 'High Pass': '0.5 Hz', 'Attenuation': '-40dB / Dec', 'Type': 'Linear FIR' },
+            arch: ['Convoluted Window Pass', 'Delay Correction Metric', 'Filtered Target Output'],
+            clinical: 'Suppresses high-frequency muscular noise generated across the chest wall during active, uninhibited respiratory movement.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#34c759" stroke-width="1.5"><path d="M5 30 C 15 30, 20 10, 35 10 S 45 30, 55 30"/></svg>`
+        },
+        'b2-4': {
+            title: 'Segmentation (V5)', type: 'Dimensional Partition',
+            desc: 'Fixed-interval slice generation triggered synchronously across all channels by the global R-wave peak timestamps.',
+            tech: { 'Pre-R Offset': '250ms', 'Post-R Offset': '450ms', 'Total Samples': '350', 'Sync': 'Cross-Lead Unified' },
+            arch: ['Global R-Peak Sync', 'Temporal Boundaries Cut', 'Data Matrix Realignment'],
+            clinical: 'Ensures spatial alignment across individual cycles, allowing clear validation of early or delayed depolarization events.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#34c759" stroke-width="1.5"><path d="M10 35 V 5 M30 35 V 5 M50 35 V 5" stroke-dasharray="3 3"/></svg>`
+        },
+        'b2-5': {
+            title: 'Mamba Architecture', type: 'Selective State Space',
+            desc: 'A linear-time selective state space network designed to learn long-range causal sequence dependencies across extended timelines.',
+            tech: { 'State Dim (d_state)': '16', 'Block Expand': '2', 'Dilation Kernel': '4', 'Scan Type': 'Bidirectional selective' },
+            arch: ['Linear Parameter Projection', '1D Depthwise Conv', 'Selective SSB Mapping', 'Output Gated Linear'],
+            clinical: 'Captures long-range temporal connections and subtle rhythm trends without suffering the high computing load of typical Transformers.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#34c759" stroke-width="1.5"><path d="M5 30 L 15 10 L 25 30 L 35 10 L 45 30 L 55 10" stroke-linejoin="round"/></svg>`
+        },
+        'b2-6': {
+            title: 'Feature Vector V5', type: 'Latent Embedding',
+            desc: 'Rich causal representation encapsulating deep temporal progression structures from the lateral myocardial view.',
+            tech: { 'Dimensions': '256', 'Memory Footprint': '1 KB', 'DType': 'Float32', 'Latent Scaling': 'Linear' },
+            arch: ['State Trajectory Compress', 'Feature Realignment', 'Projection Layer'],
+            clinical: 'Provides the central fusion layer with robust indicators of left-ventricular muscle condition and structural timing behavior.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#34c759" stroke-width="1.5"><circle cx="20" cy="15" r="4"/><circle cx="40" cy="15" r="4"/><circle cx="20" cy="28" r="4"/><circle cx="40" cy="28" r="4"/><path d="M24 15 h12 M24 28 h12 M20 19 v5 M40 19 v5"/></svg>`
+        },
+        'b3-1': {
+            title: 'Raw Lead aVF Signal', type: 'Data Intake',
+            desc: 'Voltage data feed streaming via the augmented unipolar foot vector configuration.',
+            tech: { 'Input Shape': '1 x 5000', 'Dynamic Range': '±5mV', 'Format': 'Interleaved', 'Vector Focus': 'Inferior Axis' },
+            arch: ['Augmented Vector Feed', 'Signal Buffer Stack', 'Matrix Pipeline Stream'],
+            clinical: 'Provides a clean vertical view of the inferior cardiac wall, critical for checking systemic diaphragmatic tissue health.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#ff9500" stroke-width="1.5"><path d="M0 20 h20 l1 -12 l2 22 l1 -14 l1 4 h15"/></svg>`
+        },
+        'b3-2': {
+            title: 'Preprocessing (aVF)', type: 'Signal Cleaning',
+            desc: 'Outlier rejection and scaling functions customized for augmented extremity lead arrays.',
+            tech: { 'Scale Mode': 'MinMax Scaling', 'Range Bounds': '[-1, 1]', 'Clipping Limit': '4.5 Sigma', 'Outlier Drop': 'True' },
+            arch: ['Amplitude Range Bounds', 'Extreme Outlier Eraser', 'Vector Baseline Alignment'],
+            clinical: 'Maintains steady amplitude scales, preventing body movement artifacts from distorting global mathematical processing weights.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#ff9500" stroke-width="1.5"><path d="M5 20 C 15 10, 25 30, 35 20 S 45 10, 55 20"/></svg>`
+        },
+        'b3-3': {
+            title: 'Bandpass Filter (aVF)', type: 'Frequency Isolation',
+            desc: 'High-attenuation digital filter stack constructed to isolate core regulatory signal frequencies.',
+            tech: { 'High-pass Freq': '0.5 Hz', 'Low-pass Freq': '45 Hz', 'Stopband Atten': '60 dB', 'Structure': 'Direct Form II' },
+            arch: ['Cascade Biquad Filter', 'Coefficient Scaler', 'Signal Vector Output'],
+            clinical: 'Filters out high-frequency muscle twitching and external grounding noise across the lower body leads.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#ff9500" stroke-width="1.5"><path d="M5 35 V 5 H 55 V 35" stroke-dasharray="2 2"/></svg>`
+        },
+        'b3-4': {
+            title: 'Segmentation (aVF)', type: 'Dimensional Partition',
+            desc: 'Extracts uniform cardiac cycle windows using global system clock anchors.',
+            tech: { 'Window Anchor': 'Unified Peak Time', 'Length Scale': '700ms', 'Array Trim': 'Zero-Pad Enable', 'Mode': 'Deterministic' },
+            arch: ['Global Map Time Sync', 'Sample Window Slice', 'Dynamic Padding Check'],
+            clinical: 'Locks all channels to a single timeline, allowing precise tracking of horizontal electrical propagation delays.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#ff9500" stroke-width="1.5"><path d="M5 5 h50 v30 h-50 z M20 5 v30 M40 5 v30"/></svg>`
+        },
+        'b3-5': {
+            title: 'MLP Architecture', type: 'Dense Neural Topology',
+            desc: 'A stack of dense, fully connected layers that map global morphometric features using non-linear activation functions.',
+            tech: { 'Layer Units': '[512, 256]', 'Dropout Ratio': '0.3', 'Regularizer': 'L2 Weight = 1e-4', 'Init': 'He Uniform' },
+            arch: ['Linear Fully Connected', 'Batch Normalization', 'ReLU Activation', 'Dropout regularizer'],
+            clinical: 'Identifies non-linear patterns across absolute voltage boundaries and specific component lengths.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#ff9500" stroke-width="1.5"><circle cx="15" cy="10" r="2"/><circle cx="15" cy="20" r="2"/><circle cx="15" cy="30" r="2"/><circle cx="45" cy="15" r="2"/><circle cx="45" cy="25" r="2"/><path d="M17 10 L 43 15 M17 20 L 43 15 M17 30 L 43 25 M17 10 L 43 25 M17 20 L 43 25" opacity="0.4"/></svg>`
+        },
+        'b3-6': {
+            title: 'Feature Vector aVF', type: 'Latent Embedding',
+            desc: 'Densely compiled vector embedding summarizing all inferior morphological patterns.',
+            tech: { 'Vector Space': '256', 'Activation Ceiling': 'None', 'Format': 'Contiguous C-Order', 'Rank': '1D' },
+            arch: ['Densely Coupled Map', 'Activation Cap', 'Continuous Vector Stack'],
+            clinical: 'Compresses vertical axis anomalies into a standard format ready for joint fusion processing.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#ff9500" stroke-width="1.5"><path d="M5 5 h50 v8 h-50 z M5 16 h50 v8 h-50 z M5 27 h50 v8 h-50 z" fill="none"/></svg>`
+        },
+        'u-1': {
+            title: 'Feature Fusion Module', type: 'Global Aggregation',
+            desc: 'Combines individual lead embeddings using multi-head cross-attention mechanism to create a unified view of the entire cardiac cycle.',
+            tech: { 'Input Maps': '3 vectors x 256', 'Fused Dimension': '768', 'Attention Heads': '4', 'Scale Method': 'Dot-Product Scaled' },
+            arch: ['Vector Concatenation', 'Multi-Head Attention Projection', 'Fused Embedding Synthesis'],
+            clinical: 'Combines multiple separate lead signals into a single diagnostic profile, uncovering conditions that might be hidden on individual leads.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#0071e3" stroke-width="1.5"><path d="M10 10 L 30 20 M10 20 L 30 20 M10 30 L 30 20 M30 20 L 50 20" stroke-width="2"/><circle cx="30" cy="20" r="4" fill="white"/></svg>`
+        },
+        'u-2': {
+            title: 'Classification Head', type: 'Decisional Mapping',
+            desc: 'Densely connected classification layers that map the unified cardiac embedding to specific target disease probabilities.',
+            tech: { 'Hidden Topology': '128 Units', 'Output Layer': '5 Classes', 'Activation': 'Softmax Function', 'Loss Target': 'Cross-Entropy' },
+            arch: ['Dense Bottleneck Layer', 'Dropout (Rate = 0.2)', 'Softmax Distribution Array'],
+            clinical: 'Calculates specific confidence metrics across multiple cardiac conditions, enabling clear differential diagnosis.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#0071e3" stroke-width="1.5"><rect x="5" y="15" width="12" height="10" rx="2"/><line x1="17" y1="20" x2="27" y2="20"/><rect x="27" y="5" width="28" height="30" rx="4"/></svg>`
+        },
+        'u-3': {
+            title: 'Diagnostic Prediction', type: 'System Output',
+            desc: 'Final classification output identifying specific pathologies such as Normal Sinus Rhythm, Atrial Fibrillation, or Myocardial Infarction.',
+            tech: { 'Output Array': '[P1...P5]', 'Confidence Level': 'Softmax %', 'Latency Index': '&lt;12ms', 'Threshold Rule': 'Argmax Select' },
+            arch: ['Argmax Decision Rule', 'Probability Map Export', 'Diagnostic Log Output'],
+            clinical: 'Provides rapid, clear actionable insights to support clinical workflows and enhance patient triage efficiency.',
+            illu: `<svg width="60" height="40" viewBox="0 0 60 40" fill="none" stroke="#34c759" stroke-width="2"><path d="M10 30 L 22 30 M22 30 L 35 15 M35 15 L 42 22 M42 22 L 52 8"/><circle cx="52" cy="8" r="2" fill="#34c759"/></svg>`
+        }
+    };
+
+    // Initialize App State
+    window.addEventListener('DOMContentLoaded', () => {
+        initSVGPaths();
+        setupHoverActions();
+        setupAccessibility();
+        
+        // Auto-reveal first step
+        revealNextNode();
+    });
+
+    window.addEventListener('resize', () => {
+        updateAllPaths();
+    });
+
+    // Responsive Connection Path Render Engine
+    function initSVGPaths() {
+        const svg = document.getElementById('pipeline-svg');
+        svg.innerHTML = ''; // Clear prior nodes
+        
+        // Build paths between ordered branch steps
+        for (let b = 1; b <= 3; b++) {
+            for (let s = 1; s < 6; s++) {
+                createPath(`b${b}-${s}`, `b${b}-${s+1}`, `path-b${b}-${s}`);
+            }
+            // Build link from branch ends to global feature fusion
+            createPath(`b${b}-6`, `u-1`, `path-b${b}-fusion`);
+        }
+        // Unified steps down-flow links
+        createPath('u-1', 'u-2', 'path-u-1');
+        createPath('u-2', 'u-3', 'path-u-2');
+    }
+
+    function createPath(fromId, toId, pathUniqueId) {
+        const svg = document.getElementById('pipeline-svg');
+        const newPath = document.createElementNS('[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)', 'path');
+        newPath.setAttribute('id', pathUniqueId);
+        newPath.setAttribute('class', 'connection-path');
+        svg.appendChild(newPath);
+    }
+
+    function updateAllPaths() {
+        for (let b = 1; b <= 3; b++) {
+            for (let s = 1; s < 6; s++) {
+                calculateCurve(`b${b}-${s}`, `b${b}-${s+1}`, `path-b${b}-${s}`);
+            }
+            calculateCurve(`b${b}-6`, `u-1`, `path-b${b}-fusion`);
+        }
+        calculateCurve('u-1', 'u-2', 'path-u-1');
+        calculateCurve('u-2', 'u-3', 'path-u-2');
+    }
+
+    function calculateCurve(fromKey, toKey, pathElementId) {
+        const fromCard = document.getElementById(`node-${fromKey}`);
+        const toCard = document.getElementById(`node-${toKey}`);
+        const pathNode = document.getElementById(pathElementId);
+        const container = document.querySelector('.pipeline-container');
+
+        if (!fromCard || !toCard || !pathNode) return;
+
+        const containerRect = container.getBoundingClientRect();
+        const rFrom = fromCard.getBoundingClientRect();
+        const rTo = toCard.getBoundingClientRect();
+
+        // Source anchor point calculations (Bottom Center)
+        const x1 = (rFrom.left + rFrom.right) / 2 - containerRect.left;
+        const y1 = rFrom.bottom - containerRect.top;
+
+        // Target anchor point calculations (Top Center)
+        const x2 = (rTo.left + rTo.right) / 2 - containerRect.left;
+        const y2 = rTo.top - containerRect.top;
+
+        const verticalDistance = y2 - y1;
+        
+        // Smooth cubic bezier calculation
+        const controlPointY1 = y1 + verticalDistance * 0.45;
+        const controlPointY2 = y2 - verticalDistance * 0.45;
+
+        const dString = `M ${x1} ${y1} C ${x1} ${controlPointY1}, ${x2} ${controlPointY2}, ${x2} ${y2}`;
+        pathNode.setAttribute('d', dString);
+    }
+
+    // Progression Engine Control
+    function revealNextNode() {
+        if (currentStepIndex >= nodeOrder.length - 1) return;
+
+        currentStepIndex++;
+        const nextNodeKey = nodeOrder[currentStepIndex];
+        const targetNode = document.getElementById(`node-${nextNodeKey}`);
+
+        // Update DOM states immediately
+        targetNode.classList.add('visible');
+        targetNode.classList.add('active-node');
+        
+        // Remove active flag from previous item
+        if (currentStepIndex > 0) {
+            const prevNodeKey = nodeOrder[currentStepIndex - 1];
+            document.getElementById(`node-${prevNodeKey}`).classList.remove('active-node');
+        }
+
+        // Animate using hardware-accelerated transforms via GSAP
+        gsap.to(targetNode, {
+            opacity: 1,
+            scale: 1,
+            y: 0,
+            duration: 0.5,
+            ease: "power2.out",
+            onComplete: () => {
+                updateAllPaths();
+                activateConnectingPath(nextNodeKey);
+            }
+        });
+
+        // Adjust buttons if sequence reaches end
+        if (currentStepIndex === nodeOrder.length - 1) {
+            document.getElementById('next-btn').disabled = true;
+        }
+    }
+
+    function activateConnectingPath(nodeKey) {
+        // Find path leading into current active step
+        if (nodeKey.startsWith('b')) {
+            const split = nodeKey.split('-');
+            const bId = split[0].replace('b', '');
+            const stepId = parseInt(split[1]);
+            if (stepId > 1) {
+                const targetPath = document.getElementById(`path-b${bId}-${stepId-1}`);
+                if (targetPath) targetPath.classList.add('active');
+            }
+        } else if (nodeKey === 'u-1') {
+            // Feature Fusion unifies all three branch ends
+            document.getElementById('path-b1-fusion').classList.add('active');
+            document.getElementById('path-b2-fusion').classList.add('active');
+            document.getElementById('path-b3-fusion').classList.add('active');
+        } else if (nodeKey === 'u-2') {
+            document.getElementById('path-u-1').classList.add('active');
+        } else if (nodeKey === 'u-3') {
+            document.getElementById('path-u-2').classList.add('active');
+        }
+    }
+
+    function resetPipeline() {
+        currentStepIndex = -1;
+        document.getElementById('next-btn').disabled = false;
+
+        // Wipe out path states
+        document.querySelectorAll('.connection-path').forEach(p => p.classList.remove('active'));
+
+        // Clear card animations
+        nodeOrder.forEach(key => {
+            const card = document.getElementById(`node-${key}`);
+            card.classList.remove('visible', 'active-node');
+            gsap.set(card, { opacity: 0, scale: 0.9, y: 20 });
+        });
+
+        // Re-reveal initial card step
+        revealNextNode();
+    }
+
+    // Custom Adaptive Floating Information Panel
+    function setupHoverActions() {
+        const panel = document.getElementById('info-panel');
+        const cards = document.querySelectorAll('.node-card');
+
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', (e) => {
+                const nodeKey = card.getAttribute('data-node');
+                // Block access to unrevealed content blocks
+                if (!card.classList.contains('visible')) return;
+
+                populatePanel(nodeKey);
+                panel.classList.add('visible');
+            });
+
+            card.addEventListener('mousemove', (e) => {
+                // Smooth tracking math offsets preventing layout jumps
+                const xOffset = 20;
+                const yOffset = 20;
+                
+                let targetX = e.clientX + xOffset;
+                let targetY = e.clientY + yOffset;
+
+                // Keep within viewport boundaries
+                if (targetX + panel.offsetWidth > window.innerWidth) {
+                    targetX = e.clientX - panel.offsetWidth - 20;
+                }
+                if (targetY + panel.offsetHeight > window.innerHeight) {
+                    targetY = window.innerHeight - panel.offsetHeight - 20;
+                }
+
+                gsap.to(panel, {
+                    left: targetX,
+                    top: targetY,
+                    duration: 0.1,
+                    ease: "power1.out"
+                });
+            });
+
+            card.addEventListener('mouseleave', () => {
+                panel.classList.remove('visible');
+            });
+        });
+    }
+
+    function populatePanel(key) {
+        const data = nodeMetadata[key];
+        if (!data) return;
+
+        document.getElementById('p-title').innerText = data.title;
+        document.getElementById('p-subtitle').innerText = data.type;
+        document.getElementById('p-desc').innerText = data.desc;
+        document.getElementById('p-clinical').innerText = data.clinical;
+        document.getElementById('p-illustration').innerHTML = data.illu;
+
+        // Generate technical specifications details subgrid
+        const techGrid = document.getElementById('p-tech');
+        techGrid.innerHTML = '';
+        Object.entries(data.tech).forEach(([label, val]) => {
+            const item = document.createElement('div');
+            item.className = 'tech-item';
+            item.innerHTML = `<span>${label}:</span><span>${val}</span>`;
+            techGrid.appendChild(item);
+        });
+
+        // Generate structural architecture layers breakdown
+        const archFlow = document.getElementById('p-arch');
+        archFlow.innerHTML = '';
+        data.arch.forEach((step, idx) => {
+            const stepDiv = document.createElement('div');
+            stepDiv.className = 'arch-step';
+            stepDiv.innerText = step;
+            archFlow.appendChild(stepDiv);
+
+            if (idx < data.arch.length - 1) {
+                const arrow = document.createElement('div');
+                arrow.className = 'arch-arrow';
+                arrow.innerHTML = '&darr;';
+                archFlow.appendChild(arrow);
+            }
+        });
+    }
+
+    // Accessibility Focus Handling
+    function setupAccessibility() {
+        nodeOrder.forEach(key => {
+            const card = document.getElementById(`node-${key}`);
+            if (card) {
+                card.setAttribute('tabindex', '0');
+                card.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (card.classList.contains('visible')) {
+                            populatePanel(key);
+                            // Position panel relative to card if activated via keyboard
+                            const rect = card.getBoundingClientRect();
+                            const panel = document.getElementById('info-panel');
+                            panel.classList.add('visible');
+                            gsap.set(panel, {
+                                left: rect.right + 20,
+                                top: rect.top
+                            });
+                        }
+                    }
+                });
+            }
+        });
+
+        // Listen for global step commands via spacebar or right arrow key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && !document.getElementById('next-btn').disabled) {
+                revealNextNode();
+            }
+        });
+    }
+</script>
