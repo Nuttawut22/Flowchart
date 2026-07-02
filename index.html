@@ -309,7 +309,7 @@
         /* Color profiles configuration */
         #node-b1-1.active-node, #node-b1-2.active-node, #node-b1-3.active-node, #node-b1-4.active-node { border-color: var(--cnn-color); }
         #node-b2-1.active-node, #node-b2-2.active-node, #node-b2-3.active-node, #node-b2-4.active-node { border-color: var(--mamba-color); }
-        #node-b3-1.active-node, #node-b3-2.active-node, #node-b3-3.active-node, #node-b3-4.active-node, #node-b3-5.active-node, #node-b3-6.active-node { border-color: var(--mlp-color); }
+        #node-b3-1.active-node, #node-b3-2.active-node, #node-b3-3.active-node, #node-b3-4.active-node { border-color: var(--mlp-color); }
         .unified-section .node-card.active-node { border-color: var(--global-accent); }
 
         /* -------------------------------------------
@@ -614,7 +614,7 @@
         </div>
 
         <div class="node-card" id="node-u-2" data-node="u-2">
-            <div class="branch-header-title">🥞 CLASSIFICATION HEAD</div>
+            <div class="branch-header-title">CLASSIFICATION HEAD</div>
             <div class="nested-stack">
                 <div class="sub-layer">Dense (256 units, Dropout 0.4)</div>
                 <div class="sub-layer">Dense (128 units, Dropout 0.3)</div>
@@ -660,15 +660,20 @@
     </div>
 
     <script>
-        const nodeOrder = [
-            'root-1', 'root-2',
-            'b1-1', 'b1-2', 'b1-3', 'b1-4',
-            'b2-1', 'b2-2', 'b2-3', 'b2-4',
-            'b3-1', 'b3-2', 'b3-3', 'b3-4',
-            'u-1', 'u-2', 'u-3'
+        // Grouped steps representing parallel row deployments matching layout rules
+        const nodeGroups = [
+            ['root-1'],
+            ['root-2'],
+            ['b1-1', 'b2-1', 'b3-1'], // Row 1 of branches simultaneously
+            ['b1-2', 'b2-2', 'b3-2'], // Row 2 of branches simultaneously
+            ['b1-3', 'b2-3', 'b3-3'], // Row 3 of branches simultaneously
+            ['b1-4', 'b2-4', 'b3-4'], // Row 4 of branches simultaneously
+            ['u-1'],                  // Back to single column layout
+            ['u-2'],
+            ['u-3']
         ];
 
-        let currentStepIndex = -1;
+        let currentGroupIndex = -1;
 
         const nodeMetadata = {
             'root-1': {
@@ -896,15 +901,20 @@
         /* -------------------------------------------
            INTERACTIVE CLICK SELECTION REVELATION
         ------------------------------------------- */
-        function setupNodeInteraction() {
-            nodeOrder.forEach(key => {
-                const card = document.getElementById(`node-${key}`);
-                if (!card) return;
+        function nodeCardClickHandler(e) {
+            const card = e.currentTarget;
+            if (card.classList.contains('clickable-target')) {
+                executeTargetGroup();
+            }
+        }
 
-                card.addEventListener('click', () => {
-                    if (card.classList.contains('clickable-target')) {
-                        executeTargetNode(key);
-                    }
+        function setupNodeInteraction() {
+            nodeGroups.forEach((group) => {
+                group.forEach(key => {
+                    const card = document.getElementById(`node-${key}`);
+                    if (!card) return;
+                    card.removeEventListener('click', nodeCardClickHandler);
+                    card.addEventListener('click', nodeCardClickHandler);
                 });
             });
         }
@@ -912,13 +922,20 @@
         function setNextClickableTarget() {
             document.querySelectorAll('.node-card').forEach(c => c.classList.remove('clickable-target'));
             
-            const nextIndex = currentStepIndex + 1;
-            if (nextIndex < nodeOrder.length) {
-                const nextKey = nodeOrder[nextIndex];
-                const nextCard = document.getElementById(`node-${nextKey}`);
-                if (nextCard) {
-                    nextCard.classList.add('clickable-target');
-                    document.getElementById('interactive-hint').innerText = `Click card: "${nodeMetadata[nextKey].title}" to execute step`;
+            const nextGroupIndex = currentGroupIndex + 1;
+            if (nextGroupIndex < nodeGroups.length) {
+                const nextGroup = nodeGroups[nextGroupIndex];
+                nextGroup.forEach(key => {
+                    const nextCard = document.getElementById(`node-${key}`);
+                    if (nextCard) {
+                        nextCard.classList.add('clickable-target');
+                    }
+                });
+
+                if (nextGroup.length > 1) {
+                    document.getElementById('interactive-hint').innerText = `Click any active card to execute next horizontal row layers`;
+                } else {
+                    document.getElementById('interactive-hint').innerText = `Click card: "${nodeMetadata[nextGroup[0]].title}" to execute step`;
                 }
             } else {
                 document.getElementById('interactive-hint').innerText = "Framework Pipeline Fully Executed";
@@ -926,32 +943,46 @@
             }
         }
 
-        function executeTargetNode(key) {
-            currentStepIndex = nodeOrder.indexOf(key);
-            const targetNode = document.getElementById(`node-${key}`);
+        function executeTargetGroup() {
+            currentGroupIndex++;
+            const currentGroup = nodeGroups[currentGroupIndex];
 
-            targetNode.classList.remove('clickable-target');
-            targetNode.classList.add('visible');
-            targetNode.classList.add('active-node');
-            
-            if (currentStepIndex > 0) {
-                const prevNodeKey = nodeOrder[currentStepIndex - 1];
-                const prevCard = document.getElementById(`node-${prevNodeKey}`);
-                if (prevCard) prevCard.classList.remove('active-node');
-            }
-
-            gsap.to(targetNode, {
-                opacity: 1,
-                scale: 1,
-                y: 0,
-                duration: 0.4,
-                ease: "power2.out",
-                onComplete: () => {
-                    updateAllPaths();
-                    activateConnectingPath(key);
-                    setNextClickableTarget();
+            // Turn off flashing target indicators across this row group
+            currentGroup.forEach(key => {
+                const targetNode = document.getElementById(`node-${key}`);
+                if (targetNode) {
+                    targetNode.classList.remove('clickable-target');
+                    targetNode.classList.add('visible');
+                    targetNode.classList.add('active-node');
                 }
             });
+
+            // Turn off highlight headers from the previously executed group row
+            if (currentGroupIndex > 0) {
+                const prevGroup = nodeGroups[currentGroupIndex - 1];
+                prevGroup.forEach(prevKey => {
+                    const prevCard = document.getElementById(`node-${prevKey}`);
+                    if (prevCard) prevCard.classList.remove('active-node');
+                });
+            }
+
+            // Simultaneously animate entire rows downwards smoothly
+            currentGroup.forEach(key => {
+                const targetNode = document.getElementById(`node-${key}`);
+                gsap.to(targetNode, {
+                    opacity: 1,
+                    scale: 1,
+                    y: 0,
+                    duration: 0.4,
+                    ease: "power2.out",
+                    onComplete: () => {
+                        updateAllPaths();
+                        activateConnectingPath(key);
+                    }
+                });
+            });
+
+            setNextClickableTarget();
         }
 
         function activateConnectingPath(nodeKey) {
@@ -994,18 +1025,20 @@
         }
 
         function resetPipeline() {
-            currentStepIndex = -1;
+            currentGroupIndex = -1;
 
             document.querySelectorAll('.connection-path').forEach(p => {
                 p.classList.remove('active');
                 p.style.stroke = 'rgba(255, 255, 255, 0.05)';
             });
 
-            nodeOrder.forEach(key => {
-                const card = document.getElementById(`node-${key}`);
-                if (!card) return;
-                card.classList.remove('visible', 'active-node', 'clickable-target');
-                gsap.set(card, { opacity: 0.15, scale: 0.98 });
+            nodeGroups.forEach(group => {
+                group.forEach(key => {
+                    const card = document.getElementById(`node-${key}`);
+                    if (!card) return;
+                    card.classList.remove('visible', 'active-node', 'clickable-target');
+                    gsap.set(card, { opacity: 0.15, scale: 0.98 });
+                });
             });
 
             gsap.to('#interactive-hint', { color: 'var(--global-accent)', scale: 1 });
@@ -1099,9 +1132,9 @@
         function setupAccessibility() {
             document.addEventListener('keydown', (e) => {
                 if (e.key === 'ArrowRight') {
-                    const nextIndex = currentStepIndex + 1;
-                    if (nextIndex < nodeOrder.length) {
-                        executeTargetNode(nodeOrder[nextIndex]);
+                    const nextGroupIndex = currentGroupIndex + 1;
+                    if (nextGroupIndex < nodeGroups.length) {
+                        executeTargetGroup();
                     }
                 }
             });
