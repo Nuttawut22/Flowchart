@@ -14,15 +14,16 @@
             --surface-color: #12121a;
             --surface-hover: #181826;
             --border-color: rgba(255, 255, 255, 0.08);
+            --border-active: rgba(255, 255, 255, 0.25);
             --text-primary: #f5f5f7;
             --text-secondary: #86868b;
             
-            --lead2-color: #0071e3;
-            --lead2-light: rgba(0, 113, 227, 0.15);
-            --v5-color: #34c759;
-            --v5-light: rgba(52, 199, 89, 0.15);
-            --avf-color: #ff9500;
-            --avf-light: rgba(255, 149, 0, 0.15);
+            --cnn-color: #0071e3;
+            --cnn-light: rgba(0, 113, 227, 0.15);
+            --mamba-color: #34c759;
+            --mamba-light: rgba(52, 199, 89, 0.15);
+            --mlp-color: #ff9500;
+            --mlp-light: rgba(255, 149, 0, 0.15);
             --global-accent: #bf5af2;
             
             --font-sans: 'Inter', -apple-system, sans-serif;
@@ -44,99 +45,82 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 60px 20px;
+            padding: 40px 20px;
             -webkit-font-smoothing: antialiased;
         }
 
         header {
             text-align: center;
             max-width: 900px;
-            margin-bottom: 80px;
+            margin-bottom: 30px;
             z-index: 10;
         }
 
         header h1 {
-            font-size: 2.8rem;
+            font-size: 2.4rem;
             font-weight: 700;
             letter-spacing: -0.03em;
-            margin-bottom: 16px;
-            background: linear-gradient(135deg, #ffffff 30%, #a1a1aa 100%);
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #ffffff 40%, #a1a1aa 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         header p {
-            font-size: 1.2rem;
+            font-size: 1.05rem;
             color: var(--text-secondary);
-            font-weight: 400;
-            line-height: 1.6;
-            max-width: 700px;
-            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .hint-text {
+            margin-top: 16px;
+            font-size: 0.9rem;
+            color: var(--global-accent);
+            font-weight: 500;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 1; }
         }
 
         .controls {
-            margin-top: 32px;
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-        }
-
-        .btn {
-            background-color: #ffffff;
-            color: #000000;
-            border: none;
-            padding: 14px 28px;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: 980px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-        }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
-            background-color: #f5f5f7;
-        }
-
-        .btn:active {
-            transform: translateY(0);
+            margin-bottom: 40px;
+            z-index: 10;
         }
 
         .btn-secondary {
             background-color: transparent;
             color: var(--text-primary);
             border: 1px solid var(--border-color);
-            box-shadow: none;
+            padding: 10px 22px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            border-radius: 980px;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .btn-secondary:hover {
             background-color: rgba(255, 255, 255, 0.05);
-            box-shadow: none;
             border-color: rgba(255, 255, 255, 0.2);
         }
 
-        .btn:disabled {
-            background-color: #2c2c2e;
-            color: #74747c;
-            box-shadow: none;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
+        /* -------------------------------------------
+           DIAGRAM FLOW & ARCHITECTURE DESIGN
+        ------------------------------------------- */
         .pipeline-container {
             position: relative;
             width: 100%;
-            max-width: 1500px;
+            max-width: 1200px;
             display: flex;
             flex-direction: column;
-            gap: 100px;
-            padding: 0 40px;
-            margin-top: 20px;
+            align-items: center;
+            gap: 50px;
+            padding: 0 20px;
         }
 
         .svg-overlay {
@@ -151,25 +135,117 @@
 
         .connection-path {
             fill: none;
-            stroke: rgba(255, 255, 255, 0.04);
+            stroke: rgba(255, 255, 255, 0.05);
             stroke-width: 2px;
             transition: stroke 0.4s, stroke-width 0.4s;
         }
 
         .connection-path.active {
             stroke-width: 2.5px;
-            stroke-dasharray: 8 4;
-            animation: flowDash 30s linear infinite;
+            stroke-dasharray: 6 4;
+            animation: flowDash 20s linear infinite;
         }
 
         @keyframes flowDash {
             to { stroke-dashoffset: -1000; }
         }
 
+        .node-card {
+            background: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px 20px;
+            width: 100%;
+            max-width: 340px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            cursor: not-allowed;
+            position: relative;
+            z-index: 2;
+            opacity: 0.15;
+            transform: scale(0.98);
+            transition: border-color 0.4s, box-shadow 0.4s, background-color 0.4s, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s;
+        }
+
+        /* Next clickable active loop */
+        .node-card.clickable-target {
+            cursor: pointer;
+            opacity: 0.7;
+            border-color: var(--global-accent);
+            box-shadow: 0 0 15px rgba(191, 90, 242, 0.3);
+            animation: targetPulse 2s infinite;
+        }
+
+        @keyframes targetPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); border-color: rgba(191, 90, 242, 0.6); }
+        }
+
+        .node-card.visible {
+            opacity: 0.4;
+            transform: scale(1);
+            cursor: pointer;
+        }
+
+        .node-card.active-node {
+            opacity: 1;
+            border-color: var(--border-active);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .node-card.visible:hover {
+            transform: translateY(-2px);
+            background-color: var(--surface-hover);
+        }
+
+        /* Shape Alterations matching image_607e5b.jpg */
+        .shape-rhombus {
+            border-radius: 6px;
+            transform: skewX(-15deg) scale(0.98);
+        }
+        .shape-rhombus.visible { transform: skewX(-15deg) scale(1); }
+        .shape-rhombus .node-header { transform: skewX(15deg); }
+
+        .shape-hexagon {
+            border-radius: 4px;
+            clip-path: polygon(8% 0%, 92% 0%, 100% 50%, 92% 100%, 8% 100%, 0% 50%);
+            padding: 18px 36px;
+        }
+
+        .shape-capsule {
+            border-radius: 100px;
+        }
+
+        /* Internal Block Hierarchy Structures */
+        .nested-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+            margin-top: 12px;
+        }
+
+        .sub-layer {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
+            padding: 8px;
+            font-size: 0.8rem;
+            font-family: var(--font-mono);
+            text-align: center;
+            color: var(--text-secondary);
+            transition: all 0.3s ease;
+        }
+
+        .node-card.active-node .sub-layer {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
         .branches-row {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 50px;
+            gap: 40px;
             width: 100%;
             position: relative;
             z-index: 2;
@@ -178,157 +254,76 @@
         .branch {
             display: flex;
             flex-direction: column;
-            gap: 56px;
+            gap: 50px;
             align-items: center;
-            position: relative;
-        }
-
-        .branch-title {
-            font-size: 0.9rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.15em;
-            margin-bottom: -16px;
-            text-align: center;
-        }
-
-        #branch-1 .branch-title { color: var(--lead2-color); }
-        #branch-2 .branch-title { color: var(--v5-color); }
-        #branch-3 .branch-title { color: var(--avf-color); }
-
-        .unified-section {
-            display: flex;
-            flex-direction: column;
-            gap: 56px;
-            align-items: center;
-            width: 100%;
-            position: relative;
-            z-index: 2;
-        }
-
-        .node-card {
-            background: var(--surface-color);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 24px;
-            width: 100%;
-            max-width: 340px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            cursor: pointer;
-            position: relative;
-            opacity: 0;
-            transform: scale(0.9) translateY(30px);
-            visibility: hidden;
-            transition: border-color 0.4s, box-shadow 0.4s, background-color 0.4s, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .node-card.visible {
-            opacity: 0.4;
-            transform: scale(1) translateY(0);
-            visibility: visible;
-        }
-
-        .node-card.active-node {
-            opacity: 1;
-            border-color: rgba(255, 255, 255, 0.2);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.6);
-        }
-
-        #branch-1 .node-card.active-node { border-color: rgba(0, 113, 227, 0.4); }
-        #branch-2 .node-card.active-node { border-color: rgba(52, 199, 89, 0.4); }
-        #branch-3 .node-card.active-node { border-color: rgba(255, 149, 0, 0.4); }
-        .unified-section .node-card.active-node { border-color: rgba(191, 90, 242, 0.4); }
-
-        .node-card.active-node:hover {
-            transform: translateY(-4px) scale(1.02);
-            background-color: var(--surface-hover);
         }
 
         .node-header {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: 12px;
+            width: 100%;
         }
 
-        .node-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.03);
+        .node-title-group {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .node-main-title {
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            text-align: center;
+            width: 100%;
+        }
+
+        .node-sub-title {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-top: 3px;
+            width: 100%;
+        }
+
+        .branch-header-title {
+            font-size: 0.85rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
             display: flex;
             align-items: center;
+            gap: 6px;
             justify-content: center;
-            color: var(--text-secondary);
-            transition: background 0.3s, color 0.3s;
-            flex-shrink: 0;
-        }
-
-        .node-card.active-node .node-icon {
-            color: #ffffff;
-        }
-
-        #branch-1 .node-card.active-node .node-icon { background: var(--lead2-light); color: var(--lead2-color); }
-        #branch-2 .node-card.active-node .node-icon { background: var(--v5-light); color: var(--v5-color); }
-        #branch-3 .node-card.active-node .node-icon { background: var(--avf-light); color: var(--avf-color); }
-        .unified-section .node-card.active-node .node-icon { background: rgba(191, 90, 242, 0.15); color: var(--global-accent); }
-
-        .node-info {
-            flex-grow: 1;
-            overflow: hidden;
-        }
-
-        .node-title {
-            font-size: 1.05rem;
-            font-weight: 600;
-            color: var(--text-secondary);
+            width: 100%;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 8px;
             margin-bottom: 4px;
-            transition: color 0.3s;
         }
 
-        .node-card.active-node .node-title {
-            color: var(--text-primary);
-        }
+        #node-b1-3 .branch-header-title { color: var(--cnn-color); }
+        #node-b2-3 .branch-header-title { color: var(--mamba-color); }
+        #node-b3-3 .branch-header-title { color: var(--mlp-color); }
 
-        .node-subtitle {
-            font-size: 0.85rem;
-            color: #636366;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .node-card.active-node .node-subtitle {
-            color: var(--text-secondary);
-        }
-
-        .node-badge {
-            position: absolute;
-            top: 16px;
-            right: 16px;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: transparent;
-            transition: background-color 0.3s;
-        }
-
-        #branch-1 .node-card.active-node .node-badge { background: var(--lead2-color); box-shadow: 0 0 10px var(--lead2-color); }
-        #branch-2 .node-card.active-node .node-badge { background: var(--v5-color); box-shadow: 0 0 10px var(--v5-color); }
-        #branch-3 .node-card.active-node .node-badge { background: var(--avf-color); box-shadow: 0 0 10px var(--avf-color); }
-        .unified-section .node-card.active-node .node-badge { background: var(--global-accent); box-shadow: 0 0 10px var(--global-accent); }
+        /* Color profiles configuration */
+        #node-b1-1.active-node, #node-b1-2.active-node, #node-b1-3.active-node, #node-b1-4.active-node { border-color: var(--cnn-color); }
+        #node-b2-1.active-node, #node-b2-2.active-node, #node-b2-3.active-node, #node-b2-4.active-node { border-color: var(--mamba-color); }
+        #node-b3-1.active-node, #node-b3-2.active-node, #node-b3-3.active-node, #node-b3-4.active-node, #node-b3-5.active-node, #node-b3-6.active-node { border-color: var(--mlp-color); }
+        .unified-section .node-card.active-node { border-color: var(--global-accent); }
 
         /* -------------------------------------------
-           FLOATING DETAIL PANEL
+           FLOATING HOVER DETAILS MODAL
         ------------------------------------------- */
         .hover-panel {
             position: fixed;
             width: 440px;
-            background: rgba(18, 18, 26, 0.95);
+            background: rgba(18, 18, 26, 0.96);
             backdrop-filter: blur(30px);
             -webkit-backdrop-filter: blur(30px);
             border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 24px;
-            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85);
             padding: 28px;
             z-index: 1000;
             pointer-events: none;
@@ -426,41 +421,34 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             background: rgba(0, 0, 0, 0.2);
-            padding: 16px;
-            border-radius: 14px;
+            padding: 12px;
+            border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
         .arch-step {
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-family: var(--font-mono);
             background: rgba(255, 255, 255, 0.04);
-            color: #e5e5ea;
-            padding: 6px 14px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #d1d1d6;
+            padding: 4px 10px;
+            border-radius: 6px;
             width: 100%;
             text-align: center;
-            opacity: 0;
-            transform: translateY(10px);
         }
 
-        .arch-arrow {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.3);
-            opacity: 0;
-        }
+        .arch-arrow { font-size: 0.7rem; color: rgba(255, 255, 255, 0.2); }
 
         .panel-clinical {
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.85rem;
+            line-height: 1.45;
             color: #e5e5ea;
-            background: rgba(52, 199, 89, 0.08);
-            border-left: 4px solid var(--v5-color);
-            padding: 10px 14px;
-            border-radius: 0 12px 12px 0;
+            background: rgba(52, 199, 89, 0.06);
+            border-left: 3px solid var(--mamba-color);
+            padding: 8px 12px;
+            border-radius: 0 10px 10px 0;
         }
 
         @media (max-width: 1200px) {
@@ -470,7 +458,7 @@
         }
 
         @media (max-width: 992px) {
-            .branches-row { grid-template-columns: 1fr; gap: 80px; }
+            .branches-row { grid-template-columns: 1fr; gap: 60px; }
             .svg-overlay { display: none; }
             .node-card { max-width: 100%; }
         }
@@ -480,248 +468,165 @@
 
     <header>
         <h1>Multi-Lead Cross-Attention Fusion Framework</h1>
-        <p>Interactive end-to-end model validation pipeline mapping asynchronous spatial configurations down to single-beat predictive heads.</p>
+        <p>Interactive medical pipeline validation. Step through processing components by clicking targets sequentially.</p>
+        <div class="hint-text" id="interactive-hint">Click the glowing card to execute step</div>
         <div class="controls">
-            <button class="btn" id="next-btn" onclick="revealNextNode()">
-                <span>Execute Step</span>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </button>
-            <button class="btn btn-secondary" onclick="resetPipeline()">Reset Execution</button>
+            <button class="btn-secondary" onclick="resetPipeline()">Reset Pipeline Layout</button>
         </div>
     </header>
 
     <main class="pipeline-container">
         <svg class="svg-overlay" id="pipeline-svg"></svg>
 
+        <!-- GLOBAL ROOT INPUT DATA BLOCKS -->
+        <div class="node-card" id="node-root-1" data-node="root-1">
+            <div class="node-header">
+                <div class="node-title-group">
+                    <div class="node-main-title">Raw ECG Signal</div>
+                    <div class="node-sub-title">Multi-Lead Analog Voltage Feed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="node-card" id="node-root-2" data-node="root-2">
+            <div class="node-header">
+                <div class="node-title-group">
+                    <div class="node-main-title">Preprocessing Engine</div>
+                    <div class="node-sub-title">360Hz Resampling &amp; Adaptive Median Filter</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- REPLICATED TREE BLOCK STRUCTURE (image_607e5b.jpg) -->
         <div class="branches-row">
-            <!-- BRANCH 1 -->
+            <!-- BRANCH 1: CNN -->
             <div class="branch" id="branch-1">
-                <div class="branch-title">Lead II (Morphology)</div>
                 <div class="node-card" id="node-b1-1" data-node="b1-1">
-                    <div class="node-badge"></div>
                     <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h3l2-7 4 14 3-10 2 3h6"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Raw Lead II Signal</div>
-                            <div class="node-subtitle">Analog Signal Intake</div>
+                        <div class="node-title-group">
+                            <div class="node-main-title">Bandpass Filter</div>
+                            <div class="node-sub-title">0.5 – 50 Hz</div>
                         </div>
                     </div>
                 </div>
                 <div class="node-card" id="node-b1-2" data-node="b1-2">
-                    <div class="node-badge"></div>
                     <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Preprocessing Engine</div>
-                            <div class="node-subtitle">Adaptive Median Filter</div>
+                        <div class="node-title-group">
+                            <div class="node-main-title">3-Sec Segmentation</div>
+                            <div class="node-sub-title">1 × 1080 Tensor</div>
                         </div>
                     </div>
                 </div>
                 <div class="node-card" id="node-b1-3" data-node="b1-3">
-                    <div class="node-badge"></div>
-                    <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4M20 12H4M20 17H4"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Bandpass Filter</div>
-                            <div class="node-subtitle">Butterworth IIR</div>
-                        </div>
+                    <div class="branch-header-title">⚙ BRANCH 1: CNN</div>
+                    <div class="nested-stack">
+                        <div class="sub-layer">Conv1D Stem (k=15)</div>
+                        <div class="sub-layer">ResBlock Stack 1</div>
+                        <div class="sub-layer">ResBlock Stack 2</div>
+                        <div class="sub-layer">ResBlock Stack 3</div>
+                        <div class="sub-layer">Adaptive Avg Pool</div>
                     </div>
                 </div>
-                <div class="node-card" id="node-b1-4" data-node="b1-4">
-                    <div class="node-badge"></div>
+                <div class="node-card shape-rhombus" id="node-b1-4" data-node="b1-4">
                     <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V3m18 18V3M7 12h10"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">3-Sec Segmentation</div>
-                            <div class="node-subtitle">GQRS Beat Splitting</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="node-card" id="node-b1-5" data-node="b1-5">
-                    <div class="node-badge"></div>
-                    <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Deep ResNet Backbone</div>
-                            <div class="node-subtitle">Convolutional Stem</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="node-card" id="node-b1-6" data-node="b1-6">
-                    <div class="node-badge"></div>
-                    <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M14 6l6 6-6 6"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">128-Dim Vector</div>
-                            <div class="node-subtitle">Morphology Embeddings</div>
-                        </div>
+                        <div class="node-main-title">128-dim Vector</div>
                     </div>
                 </div>
             </div>
 
-            <!-- BRANCH 2 -->
+            <!-- BRANCH 2: MAMBA -->
             <div class="branch" id="branch-2">
-                <div class="branch-title">Lead V5 (Long-Range Rhythm)</div>
                 <div class="node-card" id="node-b2-1" data-node="b2-1">
-                    <div class="node-badge"></div>
                     <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h3l2-7 4 14 3-10 2 3h6"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Raw Lead V5 Signal</div>
-                            <div class="node-subtitle">Anterior Wall Profile</div>
+                        <div class="node-title-group">
+                            <div class="node-main-title">Lowpass Filter</div>
+                            <div class="node-sub-title">9 Hz</div>
                         </div>
                     </div>
                 </div>
                 <div class="node-card" id="node-b2-2" data-node="b2-2">
-                    <div class="node-badge"></div>
                     <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Preprocessing Engine</div>
-                            <div class="node-subtitle">360 Hz Re-sampling</div>
+                        <div class="node-title-group">
+                            <div class="node-main-title">10-Sec Sequence Window</div>
+                            <div class="node-sub-title">1 × 3600 Tensor</div>
                         </div>
                     </div>
                 </div>
                 <div class="node-card" id="node-b2-3" data-node="b2-3">
-                    <div class="node-badge"></div>
-                    <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4M20 12H4M20 17H4"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Bandpass Filter</div>
-                            <div class="node-subtitle">Z-Score Normalization</div>
-                        </div>
+                    <div class="branch-header-title">≈ BRANCH 2: MAMBA</div>
+                    <div class="nested-stack">
+                        <div class="sub-layer">Linear Proj (d=64)</div>
+                        <div class="sub-layer">Mamba Block 1</div>
+                        <div class="sub-layer">Mamba Block 2</div>
+                        <div class="sub-layer">Mamba Block 3</div>
+                        <div class="sub-layer">Mamba Block 4 + Adaptive Avg Pool</div>
                     </div>
                 </div>
-                <div class="node-card" id="node-b2-4" data-node="b2-4">
-                    <div class="node-badge"></div>
+                <div class="node-card shape-rhombus" id="node-b2-4" data-node="b2-4">
                     <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V3m18 18V3M7 12h10"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">3-Sec Segmentation</div>
-                            <div class="node-subtitle">Pan-Tompkins Windows</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="node-card" id="node-b2-5" data-node="b2-5">
-                    <div class="node-badge"></div>
-                    <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 30 L 15 10 L 25 30 L 35 10 L 45 30 L 55 10"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Mamba Space Branch</div>
-                            <div class="node-subtitle">State-Space Model</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="node-card" id="node-b2-6" data-node="b2-6">
-                    <div class="node-badge"></div>
-                    <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M14 6l6 6-6 6"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">128-Dim Vector</div>
-                            <div class="node-subtitle">Recurrent Sequential States</div>
-                        </div>
+                        <div class="node-main-title">128-dim Vector</div>
                     </div>
                 </div>
             </div>
 
-            <!-- BRANCH 3 -->
+            <!-- BRANCH 3: MLP -->
             <div class="branch" id="branch-3">
-                <div class="branch-title">Lead aVF (Clinical Metadata)</div>
                 <div class="node-card" id="node-b3-1" data-node="b3-1">
-                    <div class="node-badge"></div>
                     <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h3l2-7 4 14 3-10 2 3h6"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Raw Lead aVF Signal</div>
-                            <div class="node-subtitle">Inferior Axis View</div>
+                        <div class="node-title-group">
+                            <div class="node-main-title">R-Peak Detection</div>
+                            <div class="node-sub-title">Pan-Tompkins Algorithm</div>
                         </div>
                     </div>
                 </div>
                 <div class="node-card" id="node-b3-2" data-node="b3-2">
-                    <div class="node-badge"></div>
                     <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Preprocessing Engine</div>
-                            <div class="node-subtitle">High-Freq Isolation</div>
+                        <div class="node-title-group">
+                            <div class="node-main-title">Hand-Crafted Feature Extraction</div>
+                            <div class="node-sub-title">1 × 3 Vector: RR, Amp, QRS</div>
                         </div>
                     </div>
                 </div>
                 <div class="node-card" id="node-b3-3" data-node="b3-3">
-                    <div class="node-badge"></div>
-                    <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7H4M20 12H4M20 17H4"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">Bandpass Filter</div>
-                            <div class="node-subtitle">Digital Zero-Phase Filter</div>
-                        </div>
+                    <div class="branch-header-title">⚛ BRANCH 3: MLP</div>
+                    <div class="nested-stack">
+                        <div class="sub-layer">Dense (64 units)</div>
+                        <div class="sub-layer">Dense (128 units)</div>
+                        <div class="sub-layer">Dense (64 units)</div>
                     </div>
                 </div>
-                <div class="node-card" id="node-b3-4" data-node="b3-4">
-                    <div class="node-badge"></div>
+                <div class="node-card shape-rhombus" id="node-b3-4" data-node="b3-4">
                     <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21V3m18 18V3M7 12h10"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">3-Sec Segmentation</div>
-                            <div class="node-subtitle">Deterministic Splitting</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="node-card" id="node-b3-5" data-node="b3-5">
-                    <div class="node-badge"></div>
-                    <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="12" r="2"/><circle cx="19" cy="12" r="2"/><circle cx="12" cy="19" r="2"/><path d="M12 7v10M7 12h10"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">MLP Feature Branch</div>
-                            <div class="node-subtitle">Fully Connected Projection</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="node-card" id="node-b3-6" data-node="b3-6">
-                    <div class="node-badge"></div>
-                    <div class="node-header">
-                        <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M14 6l6 6-6 6"/></svg></div>
-                        <div class="node-info">
-                            <div class="node-title">128-Dim Vector</div>
-                            <div class="node-subtitle">Clinical Index Embeddings</div>
-                        </div>
+                        <div class="node-main-title">64-dim Vector</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- UNIFIED BLOCK -->
-        <div class="unified-section">
-            <div class="node-card" id="node-u-1" data-node="u-1">
-                <div class="node-badge"></div>
-                <div class="node-header">
-                    <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M12 6v12M6 12h12"/></svg></div>
-                    <div class="node-info">
-                        <div class="node-title">Feature Fusion Module</div>
-                        <div class="node-subtitle">Multi-Head Cross-Attention</div>
-                    </div>
+        <!-- COMBINED POST FUSION SEQUENCES -->
+        <div class="node-card shape-hexagon" id="node-u-1" data-node="u-1">
+            <div class="node-header">
+                <div class="node-title-group">
+                    <div class="node-main-title">FEATURE FUSION</div>
+                    <div class="node-sub-title">Concatenation &rarr; 320-dim Vector</div>
                 </div>
             </div>
+        </div>
 
-            <div class="node-card" id="node-u-2" data-node="u-2">
-                <div class="node-badge"></div>
-                <div class="node-header">
-                    <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-                    <div class="node-info">
-                        <div class="node-title">Classification Head</div>
-                        <div class="node-subtitle">Dense Projections &amp; Softmax</div>
-                    </div>
-                </div>
+        <div class="node-card" id="node-u-2" data-node="u-2">
+            <div class="branch-header-title">🥞 CLASSIFICATION HEAD</div>
+            <div class="nested-stack">
+                <div class="sub-layer">Dense (256 units, Dropout 0.4)</div>
+                <div class="sub-layer">Dense (128 units, Dropout 0.3)</div>
+                <div class="sub-layer">Output (5 units, Softmax)</div>
             </div>
+        </div>
 
-            <div class="node-card" id="node-u-3" data-node="u-3">
-                <div class="node-badge"></div>
-                <div class="node-header">
-                    <div class="node-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="M22 4L12 14.01l-3-3"/></svg></div>
-                    <div class="node-info">
-                        <div class="node-title">Final Prediction</div>
-                        <div class="node-subtitle">Diagnostic Softmax Matrix</div>
-                    </div>
+        <div class="node-card shape-capsule" id="node-u-3" data-node="u-3">
+            <div class="node-header">
+                <div class="node-title-group">
+                    <div class="node-main-title">Final Prediction</div>
+                    <div class="node-sub-title">NSR • PVC • SVT • CHF • AF</div>
                 </div>
             </div>
         </div>
@@ -738,7 +643,7 @@
         </div>
         <div>
             <div class="panel-section-title">Description</div>
-            <p class="panel-desc" id="p-desc">Description panel text</p>
+            <p class="panel-desc" id="p-desc">Description text</p>
         </div>
         <div>
             <div class="panel-section-title">Technical Details</div>
@@ -750,215 +655,192 @@
         </div>
         <div>
             <div class="panel-section-title">Clinical Purpose</div>
-            <div class="panel-clinical" id="p-clinical">Clinical relevance block</div>
+            <div class="panel-clinical" id="p-clinical">Clinical block</div>
         </div>
     </div>
 
     <script>
         const nodeOrder = [
-            'b1-1', 'b1-2', 'b1-3', 'b1-4', 'b1-5', 'b1-6',
-            'b2-1', 'b2-2', 'b2-3', 'b2-4', 'b2-5', 'b2-6',
-            'b3-1', 'b3-2', 'b3-3', 'b3-4', 'b3-5', 'b3-6',
+            'root-1', 'root-2',
+            'b1-1', 'b1-2', 'b1-3', 'b1-4',
+            'b2-1', 'b2-2', 'b2-3', 'b2-4',
+            'b3-1', 'b3-2', 'b3-3', 'b3-4',
             'u-1', 'u-2', 'u-3'
         ];
 
         let currentStepIndex = -1;
 
         const nodeMetadata = {
+            'root-1': {
+                title: 'Raw ECG Signal', type: 'Data Intake Stage', color: '#ffffff',
+                desc: 'Continuous streams of un-filtered multi-lead analog cardiac voltage waveforms arriving directly from collection nodes.',
+                tech: { 'Input Channels': 'Multi-Lead Vector', 'Format': 'Continuous Stream', 'Data Type': 'Float32 Voltages' },
+                arch: ['Biological Surface Nodes', 'Differential Preamplifier', 'Continuous Streaming Feed'],
+                clinical: 'Provides raw, unaltered electrical activity metrics capturing complete spatial data profiles across cardiac fields.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="#fff" stroke-width="1.5"><path d="M0 15 h10 l2-6 l2 18 l2-16 l1 4 h23"/></svg>`
+            },
+            'root-2': {
+                title: 'Preprocessing Engine', type: 'Signal Standardization', color: '#ffffff',
+                desc: 'Performs explicit 360Hz downsampling and baseline correction routines to eliminate tracking drift.',
+                tech: { 'Sampling Rule': '360Hz Fixed Target', 'Filter Loop': 'Adaptive Median Block', 'Precision': 'FP32 Normalizer' },
+                arch: ['360Hz Resampling Loop', 'Baseline Trend Estimation', 'Subtractive Normalization'],
+                clinical: 'Cleans out respirational shifting errors and high frequency powerline noise while maintaining absolute waveform patterns.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="#fff" stroke-width="1.5"><path d="M0 15 h12 l1-4 l2 8 l1-6 h24" stroke-dasharray="2 2"/><path d="M0 15 Q 15 10, 30 15 T 60 15" stroke-width="1"/></svg>`
+            },
             'b1-1': {
-                title: 'Raw Lead II Signal', type: 'Data Intake (CNN Branch)', color: 'var(--lead2-color)',
-                desc: 'Continuous real-time raw electrical activity feed captured from the Lead II configuration mapping standard cardiac vectors.',
-                tech: { 'Input Shape': '1 × 5000', 'Output Shape': '1 × 5000', 'Data Format': 'Float32 Tensor', 'Sampling Frequency': '500 Hz' },
-                arch: ['Analog Sensor Intake', 'ADC Discretization', 'Raw Array Streaming'],
-                clinical: 'Lead II follows the main vertical axis depolarization of the ventricles, establishing excellent baseline views of normal rhythm parameters.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--lead2-color)" stroke-width="1.5"><path d="M0 20 h12 l2-6 l2 22 l2-20 l1 4 h21"/><circle cx="14" cy="20" r="2" fill="var(--lead2-color)"/><animate attributeName="opacity" values="0.4;1;0.4" dur="2s" repeatCount="indefinite"/></svg>`
+                title: 'Bandpass Filter (CNN)', type: 'Frequency Isolation', color: 'var(--cnn-color)',
+                desc: 'Butterworth IIR filter structure isolating strict target morphology components.',
+                tech: { 'Passband': '0.5 – 50 Hz', 'Structure': 'Butterworth IIR', 'Phase Shift': 'Zero-Phase Realignment' },
+                arch: ['Forward Filter Sweep', 'Time Reversal Matrix', 'Backward Clean Sweep'],
+                clinical: 'Mutes tracking drift below 0.5Hz and muscle artifacts above 50Hz to clean structural waveform views.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--cnn-color)" stroke-width="1.5"><path d="M5 25 C 12 25, 18 5, 28 5 S 40 25, 45 25" stroke-width="2"/></svg>`
             },
             'b1-2': {
-                title: 'Preprocessing Engine', type: 'Signal Transformation', color: 'var(--lead2-color)',
-                desc: 'Executes 360 Hz re-sampling along with adaptive median filtering loops to remove baseline wander and transient pacing spikes.',
-                tech: { 'Target Frequency': '360 Hz', 'Median Windows': '200ms & 600ms', 'Scale Mapping': 'Unity Variance', 'Interpolation': 'Cubic' },
-                arch: ['Decimation Pipeline', 'Dual Window Median Filter', 'Z-Score Standardizer'],
-                clinical: 'Ensures muscle tremors, breathing tracking swings, and sudden electrode movements do not mask real target changes.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--lead2-color)" stroke-width="1.5"><path d="M0 17 h10 l2 -5 l2 12 l1 -9 l1 2 h20" stroke-width="1"/><path d="M0 17 Q 15 12, 30 17 T 60 17" stroke-width="1.5" stroke-dasharray="3 2"/></svg>`
+                title: '3-Sec Segmentation', type: 'Dimensional Slicing', color: 'var(--cnn-color)',
+                desc: 'Partitions continuous timelines into fixed duration segment tensors for structural morphological parsing.',
+                tech: { 'Window Size': '3.0 Seconds', 'Array Count': '1080 Samples', 'Stride Config': 'Overlapping Windows' },
+                arch: ['Time Anchor Localization', 'Tensor Slice Extraction', 'Array Boundary Packing'],
+                clinical: 'Transforms sequential voltage configurations into constant dimensions ready for deep neural nets.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--cnn-color)" stroke-width="1.5"><rect x="4" y="4" width="12" height="22" rx="2"/><rect x="19" y="4" width="12" height="22" rx="2"/><rect x="34" y="4" width="12" height="22" rx="2"/></svg>`
             },
             'b1-3': {
-                title: 'Bandpass Filter', type: 'Frequency Processing', color: 'var(--lead2-color)',
-                desc: 'Digital Butterworth Zero-Phase filter sequence constructed to clean the spectrum into defined clinical monitoring bands.',
-                tech: { 'Low Pass Cutoff': '45 Hz', 'High Pass Cutoff': '0.5 Hz', 'Filter Order': '4th Order', 'Phase Error': '0.0 Rad' },
-                arch: ['Forward Filter Array', 'Time Inversion Step', 'Reverse Filter Array'],
-                clinical: 'Removes out-of-band high-frequency electromyographic noise while preserving strict timing boundaries.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--lead2-color)" stroke-width="1.5"><path d="M5 28 C 15 28, 20 8, 35 8 S 45 28, 55 28" stroke-width="2"/></svg>`
+                title: 'BRANCH 1: CNN', type: 'Deep Residual Network Block', color: 'var(--cnn-color)',
+                desc: 'Stacked multi-scale 1D convolutions parsing fine local morphological structural alterations.',
+                tech: { 'Stem Kernel': '15 Width', 'Residual Units': '3 Sequential Blocks', 'Pooling Mode': 'Adaptive Average Pool' },
+                arch: ['Conv1D Stem (k=15)', 'ResBlock Stack 1', 'ResBlock Stack 2', 'ResBlock Stack 3', 'Adaptive Avg Pool'],
+                clinical: 'Automates advanced feature parsing across QRS configurations and localized ST-segment tracking structures.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--cnn-color)" stroke-width="1.5"><rect x="4" y="8" width="10" height="14" rx="1"/><rect x="18" y="5" width="12" height="20" rx="1"/><rect x="34" y="10" width="12" height="10" rx="1"/></svg>`
             },
             'b1-4': {
-                title: '3-Sec Segmentation', type: 'Temporal Splitting', color: 'var(--lead2-color)',
-                desc: 'Synchronous window extraction driven by GQRS and Pan-Tompkins peak trackers to construct uniform standalone data frames.',
-                tech: { 'Frame Window': '3.0 Seconds', 'Total Dimensions': '1080 Samples', 'Stride Interval': '360 Samples', 'Padding Strategy': 'Zero-Edge' },
-                arch: ['Pan-Tompkins Operator', 'R-Peak Index Mapping', 'Fixed Frame Partitioning'],
-                clinical: 'Isolates distinct cardiac events into standardized blocks, preparing the signals for structured deep neural network processing.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--lead2-color)" stroke-width="1.5"><rect x="5" y="5" width="14" height="25" rx="3"/><rect x="23" y="5" width="14" height="25" rx="3"/><rect x="41" y="5" width="14" height="25" rx="3"/></svg>`
-            },
-            'b1-5': {
-                title: 'Deep ResNet Backbone', type: 'CNN Feature Learning', color: 'var(--lead2-color)',
-                desc: 'A multi-scale 1D Convolutional network utilizing deep residual tracking layers to parse local morphological waveform features.',
-                tech: { 'Kernel Size': '15', 'Residual Blocks': '3 Stacks', 'Activation': 'Swish Framework', 'Parameters': '≈387K weights' },
-                arch: ['Conv1D Stem (k=15)', 'ResBlock Stack 1', 'ResBlock Stack 2', 'ResBlock Stack 3', 'Adaptive Avg Pool'],
-                clinical: 'Extracts detailed morphological changes, tracking key components like the QRS complex, P-wave shapes, and T-wave anomalies.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--lead2-color)" stroke-width="1.5"><rect x="5" y="8" width="10" height="20" rx="1"/><rect x="20" y="5" width="12" height="26" rx="2"/><rect x="37" y="11" width="18" height="14" rx="2"/></svg>`
-            },
-            'b1-6': {
-                title: '128-Dim Vector (L-II)', type: 'Latent Embedding Output', color: 'var(--lead2-color)',
-                desc: 'Highly compressed feature embedding summarizing all morphological structures extracted from Lead II.',
-                tech: { 'Vector Shape': '1 × 128', 'DType': 'Float32 Matrix', 'Pooling Output': 'Adaptive Mean', 'Regularization': 'L2 Norm' },
-                arch: ['Global Adaptive Flatten', 'Linear Projection Layer', 'Batch Normalization Map'],
-                clinical: 'Transforms complex structural waveforms into neat mathematical embeddings optimized for spatial cross-attention matching.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--lead2-color)" stroke-width="1.5"><circle cx="15" cy="17" r="3"/><circle cx="30" cy="17" r="3"/><circle cx="45" cy="17" r="3"/><path d="M18 17 h9 M33 17 h9" stroke-dasharray="2 1"/></svg>`
+                title: '128-dim Vector (CNN)', type: 'Latent Space Morphology Output', color: 'var(--cnn-color)',
+                desc: 'Compressed latent topology tracking spatial morphological properties extracted via the CNN branch.',
+                tech: { 'Vector Breadth': '1 × 128', 'Data Target': 'Morphology Embedding', 'Matrix Mode': 'Continuous Latent Space' },
+                arch: ['Global Adaptive Pool Flatten', 'Linear Dense Map Projection', 'LayerNorm Scaling Block'],
+                clinical: 'Maps wave shape details into low-dimensional parameters optimized for joint cross attention pairing.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--cnn-color)" stroke-width="1.5"><circle cx="12" cy="15" r="3"/><circle cx="25" cy="15" r="3"/><circle cx="38" cy="15" r="3"/><path d="M15 15 h7 M28 15 h7" stroke-dasharray="2 1"/></svg>`
             },
             'b2-1': {
-                title: 'Raw Lead V5 Signal', type: 'Data Intake (Mamba Branch)', color: 'var(--v5-color)',
-                desc: 'Continuous real-time precordial raw signal track captured from the lateral chest wall monitoring path.',
-                tech: { 'Input Shape': '1 × 5000', 'Output Shape': '1 × 5000', 'Vector Reference': 'Lateral Wall Left', 'Precision': 'FP32' },
-                arch: ['Precordial Sensor Feed', 'ADC Quantization', 'Raw Matrix Array Stream'],
-                clinical: 'Provides high sensitivity to left ventricular performance shifts and complex lateral wall ischemic anomalies.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--v5-color)" stroke-width="1.5"><path d="M0 17 h10 l2-8 l2 20 l2-16 l1 4 h23"/><animate attributeName="stroke-width" values="1.5;2;1.5" dur="1s" repeatCount="indefinite"/></svg>`
+                title: 'Lowpass Filter (Mamba)', type: 'Rhythm Clean Filtering', color: 'var(--mamba-color)',
+                desc: 'Specialized lowpass step attenuating electrical muscle tremor profiles.',
+                tech: { 'Cutoff Boundary': '9 Hz Cut', 'Filter Topology': 'Low-Pass Zero Phase', 'Attenuation Rate': '-24 dB/Octave' },
+                arch: ['Forward Matrix Cascade', 'Time Variable Correction', 'Low-Frequency Extraction Pass'],
+                clinical: 'Isolates slow macro rhythm progressions, removing sudden spikes that interfere with sequence analysis.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--mamba-color)" stroke-width="1.5"><path d="M5 5 Q 25 5, 25 25 T 45 25" stroke-width="2"/></svg>`
             },
             'b2-2': {
-                title: 'Preprocessing Engine', type: 'Signal Transformation', color: 'var(--v5-color)',
-                desc: 'Executes 360 Hz decimation and filtering loops to strip out baseline wander and artifacts.',
-                tech: { 'Target Frequency': '360 Hz', 'Median Windows': '200ms & 600ms', 'Scale Mapping': 'Unity Variance', 'Interpolation': 'Cubic' },
-                arch: ['Decimation Pipeline', 'Dual Window Median Filter', 'Z-Score Standardizer'],
-                clinical: 'Ensures baseline stabilization across precordial leads, protecting small ST-segment shifts from low-frequency noise.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--v5-color)" stroke-width="1.5"><path d="M0 17 h10 l2 -5 l2 12 l1 -9 l1 2 h20" stroke-width="1"/><path d="M0 17 Q 15 12, 30 17 T 60 17" stroke-width="1.5" stroke-dasharray="3 2"/></svg>`
-            },
-            'b2-3': {
-                title: 'Bandpass Filter', type: 'Frequency Processing', color: 'var(--v5-color)',
-                desc: 'Digital Butterworth Zero-Phase filter sequence constructed to clean the spectrum into defined clinical monitoring bands.',
-                tech: { 'Low Pass Cutoff': '45 Hz', 'High Pass Cutoff': '0.5 Hz', 'Filter Order': '4th Order', 'Phase Error': '0.0 Rad' },
-                arch: ['Forward Filter Array', 'Time Inversion Step', 'Reverse Filter Array'],
-                clinical: 'Eliminates high-frequency muscle artifacts common in anterior chest leads during movement.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--v5-color)" stroke-width="1.5"><path d="M5 28 C 15 28, 20 8, 35 8 S 45 28, 55 28" stroke-width="2"/></svg>`
-            },
-            'b2-4': {
-                title: '3-Sec Segmentation', type: 'Temporal Splitting', color: 'var(--v5-color)',
-                desc: 'Synchronous window extraction driven by GQRS and Pan-Tompkins peak trackers to construct uniform standalone data frames.',
-                tech: { 'Frame Window': '3.0 Seconds', 'Total Dimensions': '1080 Samples', 'Stride Interval': '360 Samples', 'Padding Strategy': 'Zero-Edge' },
+                title: '10-Sec Sequence Window', type: 'Macro Sequential Windowing', color: 'var(--mamba-color)',
+                desc: 'Extracted long duration matrix tracking contextual rhythm anomalies across multiple cycles.',
+                tech: { 'Window Target': '10.0 Seconds', 'Total Array Shape': '1 × 3600 Samples', 'Stride Interval': '360 Samples', 'Padding Strategy': 'Zero-Edge' },
                 arch: ['Pan-Tompkins Operator', 'R-Peak Index Mapping', 'Fixed Frame Partitioning'],
                 clinical: 'Provides aligned segments that allow cross-comparison of synchronization delays across the different leads.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--v5-color)" stroke-width="1.5"><rect x="5" y="5" width="14" height="25" rx="3"/><rect x="23" y="5" width="14" height="25" rx="3"/><rect x="41" y="5" width="14" height="25" rx="3"/></svg>`
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--mamba-color)" stroke-width="1.5"><rect x="5" y="5" width="14" height="25" rx="3"/><rect x="23" y="5" width="14" height="25" rx="3"/><rect x="41" y="5" width="14" height="25" rx="3"/></svg>`
             },
-            'b2-5': {
-                title: 'Mamba Space Branch', type: 'Selective State Space Model', color: 'var(--v5-color)',
+            'b2-3': {
+                title: 'BRANCH 2: MAMBA', type: 'Selective State Space Model', color: 'var(--mamba-color)',
                 desc: 'Linear-time selective state space model engineered to capture ultra-long sequence dependencies across rhythm signals.',
                 tech: { 'State Dim (d_state)': '16', 'Channel Expansion': '2', 'Dilation Kernel': '4', 'Compute Complexity': 'O(N) Linear' },
-                arch: ['Linear Param Projection', '1D Depthwise Conv', 'Selective SSM Scan Block', 'Gated Output Controller'],
+                arch: ['Linear Parameter Projection', '1D Depthwise Conv Layers', 'Selective SSB Scanning Node', 'Gated Gated Output Component'],
                 clinical: 'Specializes in tracking long-range sequential variations, helping pinpoint complex arrhythmias like intermittent AFib.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--v5-color)" stroke-width="1.5"><path d="M5 25 L 15 10 L 25 25 L 35 10 L 45 25 L 55 10" stroke-linejoin="round" stroke-dasharray="300"/><animate attributeName="stroke-dashoffset" values="300;0" dur="2s" repeatCount="indefinite"/></svg>`
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--mamba-color)" stroke-width="1.5"><path d="M5 25 L 15 10 L 25 25 L 35 10 L 45 25 L 55 10" stroke-linejoin="round" stroke-dasharray="300"/><animate attributeName="stroke-dashoffset" values="300;0" dur="2s" repeatCount="indefinite"/></svg>`
             },
-            'b2-6': {
-                title: '128-Dim Vector (V5)', type: 'Latent Embedding Output', color: 'var(--v5-color)',
-                desc: 'Causal sequence summary embedding encapsulating long-range temporal trends from Lead V5.',
-                tech: { 'Vector Size': '1 × 128', 'DType': 'Float32 Array', 'State Transition': 'Compressed Trajectory', 'Normalization': 'LayerNorm' },
-                arch: ['State Space Matrix Compress', 'Feature Projection Map', 'Layer Normalization Layer'],
-                clinical: 'Provides the global attention module with an actionable map of long-term timing and rhythm behavior.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--v5-color)" stroke-width="1.5"><circle cx="20" cy="12" r="3"/><circle cx="40" cy="12" r="3"/><circle cx="20" cy="24" r="3"/><circle cx="40" cy="24" r="3"/><path d="M23 12 h14 M23 24 h14 M20 15 v6 M40 15 v6" opacity="0.5"/></svg>`
+            'b2-4': {
+                title: '128-dim Vector (Mamba)', type: 'Latent Space Rhythm Output', color: 'var(--mamba-color)',
+                desc: 'Sequence tracking latent embedding compressing long-term timing properties.',
+                tech: { 'Vector Space': '1 × 128', 'DType': 'Float32 Latent Tensor', 'State Transition': 'Compressed Trajectory' },
+                arch: ['State Space Compression Block', 'Feature Re-projection Engine', 'Layer Normalization Scale'],
+                clinical: 'Provides the aggregation layer with detailed descriptions of overall mechanical rhythm consistency.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--mamba-color)" stroke-width="1.5"><circle cx="15" cy="10" r="3"/><circle cx="35" cy="10" r="3"/><circle cx="15" cy="20" r="3"/><circle cx="35" cy="20" r="3"/><path d="M18 10 h14 M18 20 h14 M15 13 v4 M35 13 v4" opacity="0.4"/></svg>`
             },
             'b3-1': {
-                title: 'Raw Lead aVF Signal', type: 'Data Intake (MLP Branch)', color: 'var(--avf-color)',
-                desc: 'Continuous augmented unipolar foot lead tracking providing a distinct vertical view of inferior myocardial fields.',
-                tech: { 'Input Shape': '1 × 5000', 'Output Shape': '1 × 5000', 'Vector Focus': 'Inferior Axis', 'Dynamic Range': '±5 mV' },
-                arch: ['Augmented Vector Unipolar Input', 'ADC Discretization Matrix', 'Raw Streaming Array Buffer'],
-                clinical: 'Essential for examining inferior wall abnormalities and verifying structural changes in diaphragmatic zones.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--avf-color)" stroke-width="1.5"><path d="M0 17 h15 l1-6 l2 14 l1-10 l1 2 h25"/></svg>`
+                title: 'R-Peak Detection', type: 'Peak Localization Framework', color: 'var(--mlp-color)',
+                desc: 'Algorithmic absolute spike localization using classic dual derivative Pan-Tompkins steps.',
+                tech: { 'Core Algorithm': 'Pan-Tompkins Operator', 'Peak Tracking': 'Dual Threshold Sliders', 'Searchback Match': 'Enabled' },
+                arch: ['Bandpass Filter Pass', 'Signal Differentiation', 'Moving Average Integration Grid'],
+                clinical: 'Calculates the foundational landmarks of each ventricular excitation cycle.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--mlp-color)" stroke-width="1.5"><path d="M0 22 h15 l2-12 l2 18 l2-14 h14"/><circle cx="17" cy="10" r="3" fill="var(--mlp-color)"/></svg>`
             },
             'b3-2': {
-                title: 'Preprocessing Engine', type: 'Signal Transformation', color: 'var(--avf-color)',
-                desc: 'Executes 360 Hz decimation and filtering loops to strip out baseline wander and artifacts.',
-                tech: { 'Target Frequency': '360 Hz', 'Median Windows': '200ms & 600ms', 'Scale Mapping': 'Unity Variance', 'Interpolation': 'Cubic' },
-                arch: ['Decimation Pipeline', 'Dual Window Median Filter', 'Z-Score Standardizer'],
-                clinical: 'Maintains steady amplitude ranges across tracking extremes, preventing motion shifts from altering global model metrics.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--avf-color)" stroke-width="1.5"><path d="M0 17 h10 l2 -5 l2 12 l1 -9 l1 2 h20" stroke-width="1"/><path d="M0 17 Q 15 12, 30 17 T 60 17" stroke-width="1.5" stroke-dasharray="3 2"/></svg>`
+                title: 'Hand-Crafted Feature Extraction', type: 'Clinical Geometry Extraction', color: 'var(--mlp-color)',
+                desc: 'Direct calculation of structured, clinically validated measurement matrices representing localized beat shapes.',
+                tech: { 'Target Vectors': '1 × 3 Feature Space', 'Extracted Values': 'RR Interval, R-Amp, QRS Width', 'Format': 'Floating Point Vectors' },
+                arch: ['Temporal Delay Calculator', 'Peak Amplitude Extractor', 'QRS Boundary Measurement Block'],
+                clinical: 'Provides explicit geometric cardiac parameters directly to the model, reinforcing automated machine patterns with known clinical indices.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--mlp-color)" stroke-width="1.5"><line x1="10" y1="5" x2="10" y2="25"/><line x1="40" y1="5" x2="40" y2="25"/><path d="M10 15 h30" stroke-width="2"/></svg>`
             },
             'b3-3': {
-                title: 'Bandpass Filter', type: 'Frequency Processing', color: 'var(--avf-color)',
-                desc: 'Digital Butterworth Zero-Phase filter sequence constructed to clean the spectrum into defined clinical monitoring bands.',
-                tech: { 'Low Pass Cutoff': '45 Hz', 'High Pass Cutoff': '0.5 Hz', 'Filter Order': '4th Order', 'Phase Error': '0.0 Rad' },
-                arch: ['Forward Filter Array', 'Time Inversion Step', 'Reverse Filter Array'],
-                clinical: 'Isolates core physiological components while muting out lower-body somatic muscle activity.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--avf-color)" stroke-width="1.5"><path d="M5 28 C 15 28, 20 8, 35 8 S 45 28, 55 28" stroke-width="2"/></svg>`
+                title: 'BRANCH 3: MLP', type: 'Densely Connected Topology', color: 'var(--mlp-color)',
+                desc: 'Densely coupled layer configurations mapping hard geometric metrics into abstract network layers.',
+                tech: { 'Layer Layout': '[64, 128, 64]', 'Regularization': 'L2 Coeff = 1e-4', 'Activation': 'Rectified Linear unit' },
+                arch: ['Linear Map (64 Units)', 'Linear Map (128 Units)', 'Linear Map (64 Units)'],
+                clinical: 'Processes and scales geometric measurements to match the weight distributions of the other deep processing branches.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--mlp-color)" stroke-width="1.5"><circle cx="10" cy="8" r="2"/><circle cx="10" cy="22" r="2"/><circle cx="40" cy="15" r="2"/><path d="M12 8 L 38 15 M12 22 L 38 15" opacity="0.4"/></svg>`
             },
             'b3-4': {
-                title: '3-Sec Segmentation', type: 'Temporal Splitting', color: 'var(--avf-color)',
-                desc: 'Synchronous window extraction driven by GQRS and Pan-Tompkins peak trackers to construct uniform standalone data frames.',
-                tech: { 'Frame Window': '3.0 Seconds', 'Total Dimensions': '1080 Samples', 'Stride Interval': '360 Samples', 'Padding Strategy': 'Zero-Edge' },
-                arch: ['Pan-Tompkins Operator', 'R-Peak Index Mapping', 'Fixed Frame Partitioning'],
-                clinical: 'Locks the unipolar signal track onto the global network timeline, preserving inter-lead phase and timing relationships.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--avf-color)" stroke-width="1.5"><rect x="5" y="5" width="14" height="25" rx="3"/><rect x="23" y="5" width="14" height="25" rx="3"/><rect x="41" y="5" width="14" height="25" rx="3"/></svg>`
-            },
-            'b3-5': {
-                title: 'MLP Feature Branch', type: 'Dense Neural Network Layer', color: 'var(--avf-color)',
-                desc: 'A stack of dense, fully connected linear layers that extract cross-layer patterns from the input indices.',
-                tech: { 'Hidden Topology': '[512, 256]', 'Dropout Apply': '0.30 Layer Rate', 'Regularization': 'L2 Lambda = 1e-4', 'Weight Init': 'He Uniform' },
-                arch: ['Fully Connected Map 1', 'Batch Normalization', 'ReLU Layer', 'Dropout Stage', 'Linear Projection 2'],
-                clinical: 'Learns non-linear interactions across absolute voltage boundaries and specialized interval metrics.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--avf-color)" stroke-width="1.5"><circle cx="15" cy="8" r="2"/><circle cx="15" cy="18" r="2"/><circle cx="15" cy="28" r="2"/><circle cx="45" cy="13" r="2"/><circle cx="45" cy="23" r="2"/><path d="M17 8 L 43 13 M17 18 L 43 13 M17 28 L 43 23 M17 8 L 43 23" opacity="0.3"/></svg>`
-            },
-            'b3-6': {
-                title: '128-Dim Vector (aVF)', type: 'Latent Embedding Output', color: 'var(--avf-color)',
-                desc: 'Fully connected embedding layer output representing summarized vertical vector structures.',
-                tech: { 'Vector Size': '1 × 128', 'Memory Track': '0.5 KB Array', 'Storage Order': 'C-Contiguous Matrix', 'Rank Index': '1D' },
-                arch: ['Densely Coupled Map Layer', 'Activation Linear Cap', 'Continuous Tensor Stack'],
-                clinical: 'Normalizes localized inferior axis traits into standard numerical layouts ready for joint fusion.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--avf-color)" stroke-width="1.5"><path d="M5 6 h50 v6 h-50 z M5 15 h50 v6 h-50 z M5 24 h50 v6 h-50 z"/></svg>`
+                title: '64-dim Vector (MLP)', type: 'Latent Space Geometric Output', color: 'var(--mlp-color)',
+                desc: 'Scaled feature mapping summarizing explicit measurement metrics derived from the MLP branch.',
+                tech: { 'Vector Depth': '1 × 64', 'Matrix Type': 'Contiguous Dense Array', 'DType': 'Float32 Tensor' },
+                arch: ['Dense Linear Projection', 'Batch Normalization', 'Feature Vector Output'],
+                clinical: 'Presents verified geometric interval metrics in a format compatible with the shared fusion stack.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--mlp-color)" stroke-width="1.5"><path d="M5 8 h40 v4 h-40 z M5 18 h40 v4 h-40 z"/></svg>`
             },
             'u-1': {
-                title: 'Feature Fusion Module', type: 'Global Aggregation Stage', color: 'var(--global-accent)',
-                desc: 'Unifies the morphology, rhythm, and clinical embedding streams using a multi-head cross-attention framework.',
-                tech: { 'Input Layout': '3 Tensors × 128', 'Attention Heads': '4 Parallel Units', 'Attention Key Dim': '32 per Head', 'Fused Space': '1 × 384' },
-                arch: ['Vector Alignment Concatenate', 'Multi-Head Attention Projection', 'Scaled Dot-Product Step', 'Context Synthesis Aggregator'],
+                title: 'FEATURE FUSION', type: 'Global Aggregation Stage', color: 'var(--global-accent)',
+                desc: 'Unifies the morphology, rhythm, and geometric feature embeddings into a single cross-attention tracking vector.',
+                tech: { 'Combined Dimension': '320-dim Vector', 'Input Sources': '128 + 128 + 64 Embeddings', 'Strategy': 'Direct Tensor Concatenation' },
+                arch: ['Vector Alignment Matcher', 'Tensor Concatenation Grid', 'Multi-View Synthesis Layer'],
                 clinical: 'Combines multiple complementary viewpoints of the heart into a single profile, exposing conditions hidden on single leads.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--global-accent)" stroke-width="1.5"><path d="M10 8 L 30 17 M10 17 L 30 17 M10 26 L 30 17 M30 17 L 50 17" stroke-width="2"/><circle cx="30" cy="17" r="4" fill="#000" stroke="var(--global-accent)" stroke-width="1.5"/></svg>`
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--global-accent)" stroke-width="1.5"><path d="M5 6 L 25 15 M5 15 L 25 15 M5 24 L 25 15 M25 15 L 45 15" stroke-width="2"/><circle cx="25" cy="15" r="3" fill="#000" stroke="var(--global-accent)"/></svg>`
             },
             'u-2': {
-                title: 'Classification Head', type: 'Decisional Strategy Mapping', color: 'var(--global-accent)',
-                desc: 'Fully connected classification head that maps the aggregated attention vector to downstream disease class dimensions.',
-                tech: { 'Bottleneck Nodes': '128 Hidden Linear', 'Output Dimensions': '5 Distinct Paths', 'Dropout Probability': '0.20 Rate', 'Loss Objective': 'Cross-Entropy' },
-                arch: ['Dense Projection Bottleneck', 'Activation Dropout Regularizer', 'Output Logit Projector Layer'],
-                clinical: 'Calculates explicit probability scoring profiles across diverse structural target classifications.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--global-accent)" stroke-width="1.5"><rect x="5" y="12" width="12" height="11" rx="2"/><line x1="17" y1="17" x2="27" y2="17"/><rect x="27" y="5" width="28" height="25" rx="4"/></svg>`
+                title: 'CLASSIFICATION HEAD', type: 'Decisional Mapping Stack', color: 'var(--global-accent)',
+                desc: 'Multi-layer dense network equipped with targeted dropouts to calculate path predictions.',
+                tech: { 'Layer Hidden Nodes': '[256, 128, 5]', 'Dropout Probabilities': '0.4 and 0.3 Rates', 'Final Layer Activation': 'Softmax Matrix Distribution' },
+                arch: ['Dense Projection Block (256, d=0.4)', 'Dense Projection Block (128, d=0.3)', 'Output Layer (5, Softmax)'],
+                clinical: 'Applies deep logical validation rules to determine cross-class probabilities from multi-lead inputs.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--global-accent)" stroke-width="1.5"><rect x="4" y="10" width="10" height="10" rx="2"/><line x1="14" y1="15" x2="24" y2="15"/><rect x="24" y="4" width="22" height="22" rx="3"/></svg>`
             },
             'u-3': {
-                title: 'Final Prediction', type: 'System Output Analytics', color: 'var(--v5-color)',
-                desc: 'Applies Softmax transformation to return verified diagnostic criteria spanning key abnormality profiles.',
-                tech: { 'Output Classes': '5 Categories', 'Evaluation Type': 'Argmax Select Index', 'System Latency': '&lt; 15ms Pipeline', 'Target Accuracy': 'Paper Verified' },
+                title: 'Final Prediction', type: 'Diagnostic Categorization Analytics', color: 'var(--mamba-color)',
+                desc: 'Argmax score extraction delivering verified clinical classification parameters.',
+                tech: { 'Output Spectrum': '5 Disease Categories', 'Target Labels': 'NSR, PVC, SVT, CHF, AF', 'Processing Latency': '&lt; 15ms' },
                 arch: ['Softmax Probability Function', 'Argmax Threshold Selection', 'Diagnostic Array Export Log'],
-                clinical: 'Delivers clear, instant diagnostic results (Normal, AFib, PVC, etc.) to optimize automated triage steps.',
-                illu: `<svg width="60" height="35" viewBox="0 0 60 35" fill="none" stroke="var(--v5-color)" stroke-width="2"><path d="M10 25 h8 v-6 h8 v-12 h8 v-4 h8"/><circle cx="42" cy="3" r="2" fill="var(--v5-color)"/></svg>`
+                clinical: 'Provides high-accuracy diagnostic results to optimize triage steps and support emergency clinical interventions.',
+                illu: `<svg width="50" height="30" viewBox="0 0 50 30" fill="none" stroke="var(--mamba-color)" stroke-width="2"><path d="M10 22 h6 v-5 h8 v-10 h8 v-3 h8"/><circle cx="40" cy="4" r="2" fill="var(--mamba-color)"/></svg>`
             }
         };
 
         window.addEventListener('DOMContentLoaded', () => {
             initSVGPaths();
+            setupNodeInteraction();
             setupHoverActions();
             setupAccessibility();
-            revealNextNode(); // Reveal first node automatically
+            
+            // Prime initial clickable state
+            setNextClickableTarget();
         });
 
         window.addEventListener('resize', () => {
             updateAllPaths();
         });
 
+        /* -------------------------------------------
+           DYNAMIC PATH CONNECTOR COORDINATE GRAPH
+        ------------------------------------------- */
         function initSVGPaths() {
             const svg = document.getElementById('pipeline-svg');
             svg.innerHTML = '';
             
-            // Branch internal links
+            createPath('root-1', 'root-2', 'path-root-1');
+            createPath('root-2', 'b1-1', 'path-root-to-b1');
+            createPath('root-2', 'b2-1', 'path-root-to-b2');
+            createPath('root-2', 'b3-1', 'path-root-to-b3');
+
             for (let b = 1; b <= 3; b++) {
-                for (let s = 1; s < 6; s++) {
+                for (let s = 1; s < 4; s++) {
                     createPath(`b${b}-${s}`, `b${b}-${s+1}`, `path-b${b}-${s}`);
                 }
-                // Branch outputs to fusion block
-                createPath(`b${b}-6`, `u-1`, `path-b${b}-fusion`);
+                createPath(`b${b}-4`, `u-1`, `path-b${b}-to-fusion`);
             }
-            // Downstream unified flows
             createPath('u-1', 'u-2', 'path-u-1');
             createPath('u-2', 'u-3', 'path-u-2');
         }
@@ -972,11 +854,16 @@
         }
 
         function updateAllPaths() {
+            calculateCurve('root-1', 'root-2', 'path-root-1');
+            calculateCurve('root-2', 'b1-1', 'path-root-to-b1');
+            calculateCurve('root-2', 'b2-1', 'path-root-to-b2');
+            calculateCurve('root-2', 'b3-1', 'path-root-to-b3');
+
             for (let b = 1; b <= 3; b++) {
-                for (let s = 1; s < 6; s++) {
+                for (let s = 1; s < 4; s++) {
                     calculateCurve(`b${b}-${s}`, `b${b}-${s+1}`, `path-b${b}-${s}`);
                 }
-                calculateCurve(`b${b}-6`, `u-1`, `path-b${b}-fusion`);
+                calculateCurve(`b${b}-4`, `u-1`, `path-b${b}-to-fusion`);
             }
             calculateCurve('u-1', 'u-2', 'path-u-1');
             calculateCurve('u-2', 'u-3', 'path-u-2');
@@ -1006,44 +893,82 @@
             pathNode.setAttribute('d', `M ${x1} ${y1} C ${x1} ${controlPointY1}, ${x2} ${controlPointY2}, ${x2} ${y2}`);
         }
 
-        function revealNextNode() {
-            if (currentStepIndex >= nodeOrder.length - 1) return;
+        /* -------------------------------------------
+           INTERACTIVE CLICK SELECTION REVELATION
+        ------------------------------------------- */
+        function setupNodeInteraction() {
+            nodeOrder.forEach(key => {
+                const card = document.getElementById(`node-${key}`);
+                if (!card) return;
 
-            currentStepIndex++;
-            const nextNodeKey = nodeOrder[currentStepIndex];
-            const targetNode = document.getElementById(`node-${nextNodeKey}`);
+                card.addEventListener('click', () => {
+                    if (card.classList.contains('clickable-target')) {
+                        executeTargetNode(key);
+                    }
+                });
+            });
+        }
 
+        function setNextClickableTarget() {
+            document.querySelectorAll('.node-card').forEach(c => c.classList.remove('clickable-target'));
+            
+            const nextIndex = currentStepIndex + 1;
+            if (nextIndex < nodeOrder.length) {
+                const nextKey = nodeOrder[nextIndex];
+                const nextCard = document.getElementById(`node-${nextKey}`);
+                if (nextCard) {
+                    nextCard.classList.add('clickable-target');
+                    document.getElementById('interactive-hint').innerText = `Click card: "${nodeMetadata[nextKey].title}" to execute step`;
+                }
+            } else {
+                document.getElementById('interactive-hint').innerText = "Framework Pipeline Fully Executed";
+                gsap.to('#interactive-hint', { color: 'var(--mamba-color)', scale: 1.05, duration: 0.4 });
+            }
+        }
+
+        function executeTargetNode(key) {
+            currentStepIndex = nodeOrder.indexOf(key);
+            const targetNode = document.getElementById(`node-${key}`);
+
+            targetNode.classList.remove('clickable-target');
             targetNode.classList.add('visible');
             targetNode.classList.add('active-node');
             
             if (currentStepIndex > 0) {
                 const prevNodeKey = nodeOrder[currentStepIndex - 1];
-                document.getElementById(`node-${prevNodeKey}`).classList.remove('active-node');
+                const prevCard = document.getElementById(`node-${prevNodeKey}`);
+                if (prevCard) prevCard.classList.remove('active-node');
             }
 
             gsap.to(targetNode, {
                 opacity: 1,
                 scale: 1,
                 y: 0,
-                duration: 0.5,
+                duration: 0.4,
                 ease: "power2.out",
                 onComplete: () => {
                     updateAllPaths();
-                    activateConnectingPath(nextNodeKey);
+                    activateConnectingPath(key);
+                    setNextClickableTarget();
                 }
             });
-
-            if (currentStepIndex === nodeOrder.length - 1) {
-                document.getElementById('next-btn').disabled = true;
-            }
         }
 
         function activateConnectingPath(nodeKey) {
-            if (nodeKey.startsWith('b')) {
+            if (nodeKey === 'root-2') {
+                document.getElementById('path-root-1').classList.add('active');
+            } else if (nodeKey.startsWith('b')) {
                 const split = nodeKey.split('-');
                 const bId = split[0].replace('b', '');
                 const stepId = parseInt(split[1]);
-                if (stepId > 1) {
+                
+                if (stepId === 1) {
+                    const rootPath = document.getElementById(`path-root-to-b${bId}`);
+                    if (rootPath) {
+                        rootPath.classList.add('active');
+                        rootPath.style.stroke = nodeMetadata[nodeKey].color;
+                    }
+                } else {
                     const targetPath = document.getElementById(`path-b${bId}-${stepId-1}`);
                     if (targetPath) {
                         targetPath.classList.add('active');
@@ -1051,12 +976,12 @@
                     }
                 }
             } else if (nodeKey === 'u-1') {
-                document.getElementById('path-b1-fusion').classList.add('active');
-                document.getElementById('path-b1-fusion').style.stroke = nodeMetadata['b1-6'].color;
-                document.getElementById('path-b2-fusion').classList.add('active');
-                document.getElementById('path-b2-fusion').style.stroke = nodeMetadata['b2-6'].color;
-                document.getElementById('path-b3-fusion').classList.add('active');
-                document.getElementById('path-b3-fusion').style.stroke = nodeMetadata['b3-6'].color;
+                document.getElementById('path-b1-4-to-fusion').classList.add('active');
+                document.getElementById('path-b1-4-to-fusion').style.stroke = nodeMetadata['b1-4'].color;
+                document.getElementById('path-b2-4-to-fusion').classList.add('active');
+                document.getElementById('path-b2-4-to-fusion').style.stroke = nodeMetadata['b2-4'].color;
+                document.getElementById('path-b3-4-to-fusion').classList.add('active');
+                document.getElementById('path-b3-4-to-fusion').style.stroke = nodeMetadata['b3-4'].color;
             } else if (nodeKey === 'u-2') {
                 const p = document.getElementById('path-u-1');
                 p.classList.add('active');
@@ -1068,6 +993,25 @@
             }
         }
 
+        function resetPipeline() {
+            currentStepIndex = -1;
+
+            document.querySelectorAll('.connection-path').forEach(p => {
+                p.classList.remove('active');
+                p.style.stroke = 'rgba(255, 255, 255, 0.05)';
+            });
+
+            nodeOrder.forEach(key => {
+                const card = document.getElementById(`node-${key}`);
+                if (!card) return;
+                card.classList.remove('visible', 'active-node', 'clickable-target');
+                gsap.set(card, { opacity: 0.15, scale: 0.98 });
+            });
+
+            gsap.to('#interactive-hint', { color: 'var(--global-accent)', scale: 1 });
+            setNextClickableTarget();
+        }
+
         function setupHoverActions() {
             const panel = document.getElementById('info-panel');
             const cards = document.querySelectorAll('.node-card');
@@ -1075,19 +1019,14 @@
             cards.forEach(card => {
                 card.addEventListener('mouseenter', () => {
                     const nodeKey = card.getAttribute('data-node');
-                    if (!card.classList.contains('visible')) return;
+                    if (!card.classList.contains('visible') && !card.classList.contains('active-node')) return;
 
                     populatePanel(nodeKey);
                     panel.classList.add('visible');
                     
-                    // Trigger inner panel cascade animations
                     gsap.fromTo(".arch-step", 
                         { opacity: 0, y: 10 }, 
-                        { opacity: 1, y: 0, duration: 0.3, stagger: 0.05, ease: "power2.out" }
-                    );
-                    gsap.fromTo(".arch-arrow", 
-                        { opacity: 0 }, 
-                        { opacity: 1, duration: 0.3, delay: 0.1, stagger: 0.05 }
+                        { opacity: 1, y: 0, duration: 0.25, stagger: 0.04, ease: "power2.out" }
                     );
                 });
 
@@ -1107,7 +1046,7 @@
                     gsap.to(panel, {
                         left: targetX,
                         top: targetY,
-                        duration: 0.15,
+                        duration: 0.1,
                         ease: "power1.out"
                     });
                 });
@@ -1122,12 +1061,9 @@
             const data = nodeMetadata[key];
             if (!data) return;
 
-            const titleNode = document.getElementById('p-title');
-            const subtitleNode = document.getElementById('p-subtitle');
-            
-            titleNode.innerText = data.title;
-            subtitleNode.innerText = data.type;
-            subtitleNode.style.color = data.color;
+            document.getElementById('p-title').innerText = data.title;
+            document.getElementById('p-subtitle').innerText = data.type;
+            document.getElementById('p-subtitle').style.color = data.color;
             
             document.getElementById('p-desc').innerText = data.desc;
             document.getElementById('p-clinical').innerText = data.clinical;
@@ -1160,50 +1096,13 @@
             });
         }
 
-        function resetPipeline() {
-            currentStepIndex = -1;
-            document.getElementById('next-btn').disabled = false;
-
-            document.querySelectorAll('.connection-path').forEach(p => {
-                p.classList.remove('active');
-                p.style.stroke = 'rgba(255, 255, 255, 0.04)';
-            });
-
-            nodeOrder.forEach(key => {
-                const card = document.getElementById(`node-${key}`);
-                card.classList.remove('visible', 'active-node');
-                gsap.set(card, { opacity: 0, scale: 0.9, y: 30 });
-            });
-
-            revealNextNode();
-        }
-
         function setupAccessibility() {
-            nodeOrder.forEach(key => {
-                const card = document.getElementById(`node-${key}`);
-                if (card) {
-                    card.setAttribute('tabindex', '0');
-                    card.addEventListener('keydown', (e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            if (card.classList.contains('visible')) {
-                                populatePanel(key);
-                                const rect = card.getBoundingClientRect();
-                                const panel = document.getElementById('info-panel');
-                                panel.classList.add('visible');
-                                gsap.set(panel, {
-                                    left: rect.right + 20,
-                                    top: rect.top
-                                });
-                            }
-                        }
-                    });
-                }
-            });
-
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'ArrowRight' && !document.getElementById('next-btn').disabled) {
-                    revealNextNode();
+                if (e.key === 'ArrowRight') {
+                    const nextIndex = currentStepIndex + 1;
+                    if (nextIndex < nodeOrder.length) {
+                        executeTargetNode(nodeOrder[nextIndex]);
+                    }
                 }
             });
         }
