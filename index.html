@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Triple Expert CNN-Mamba-MLP Architecture</title>
+    <title>Multi-Lead ECG Deep Learning Pipeline Presentation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -329,7 +329,7 @@
             pointer-events: none;
             opacity: 0;
             transform: scale(0.96) translateY(10px);
-            transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             display: flex;
             flex-direction: column;
             gap: 20px;
@@ -338,6 +338,17 @@
         .hover-panel.visible {
             opacity: 1;
             transform: scale(1) translateY(0);
+            pointer-events: auto;
+        }
+
+        .panel-open-hint {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            text-align: center;
+            padding-top: 4px;
+            border-top: 1px solid rgba(255,255,255,0.06);
         }
 
         .panel-header {
@@ -461,6 +472,258 @@
             .branches-row { grid-template-columns: 1fr; gap: 60px; }
             .svg-overlay { display: none; }
             .node-card { max-width: 100%; }
+        }
+
+        /* -------------------------------------------
+           FULL-SCREEN DETAIL EXPLORER OVERLAY
+        ------------------------------------------- */
+        body.detail-lock { overflow: hidden; }
+
+        .pipeline-container.blurred,
+        header.blurred {
+            filter: blur(14px) brightness(0.5) saturate(0.8);
+            pointer-events: none;
+            transition: filter 0.5s ease;
+        }
+
+        .detail-scrim {
+            position: fixed;
+            inset: 0;
+            background: rgba(4, 4, 8, 0.55);
+            z-index: 1900;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .detail-overlay {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: min(880px, 100vw);
+            background: linear-gradient(180deg, #101018 0%, #0b0b0f 100%);
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: -40px 0 90px rgba(0, 0, 0, 0.6);
+            z-index: 2000;
+            overflow-y: auto;
+            overflow-x: hidden;
+            transform: translateX(100%);
+            display: flex;
+            flex-direction: column;
+            visibility: hidden;
+        }
+
+        .detail-overlay::-webkit-scrollbar { width: 8px; }
+        .detail-overlay::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 8px; }
+
+        .detail-topbar {
+            position: sticky;
+            top: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding: 22px 40px;
+            background: rgba(11, 11, 15, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            z-index: 5;
+        }
+
+        .detail-back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 9px 18px 9px 14px;
+            border-radius: 980px;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .detail-back-btn:hover { background: rgba(255,255,255,0.09); border-color: rgba(255,255,255,0.25); }
+
+        .detail-nav-group { display: flex; align-items: center; gap: 10px; }
+
+        .detail-nav-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 9px 16px;
+            border-radius: 980px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+        .detail-nav-btn:hover:not(:disabled) { color: var(--text-primary); border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.05); }
+        .detail-nav-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .detail-body { padding: 8px 40px 80px; }
+
+        .detail-eyebrow {
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+            margin-top: 28px;
+        }
+
+        .detail-title {
+            font-size: 2.6rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-top: 8px;
+            line-height: 1.1;
+        }
+
+        .detail-desc {
+            margin-top: 18px;
+            font-size: 1.08rem;
+            line-height: 1.65;
+            color: #d1d1d6;
+            max-width: 640px;
+        }
+
+        .detail-section {
+            margin-top: 48px;
+            padding-top: 32px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+
+        .detail-section-label {
+            font-size: 0.78rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--text-secondary);
+            margin-bottom: 18px;
+        }
+
+        .detail-illu-frame {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 20px;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .detail-illu-frame svg { width: 100%; max-width: 640px; height: auto; }
+
+        /* Pipeline position breadcrumb */
+        .position-track {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 6px;
+        }
+        .position-step {
+            font-size: 0.82rem;
+            font-family: var(--font-mono);
+            padding: 7px 14px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: var(--text-secondary);
+        }
+        .position-step.current {
+            background: rgba(255,255,255,0.08);
+            border-color: var(--border-active);
+            color: #fff;
+            font-weight: 600;
+        }
+        .position-arrow { color: rgba(255,255,255,0.2); font-size: 0.8rem; }
+
+        .detail-tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 14px;
+        }
+        .detail-tech-card {
+            background: rgba(255,255,255,0.025);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 14px;
+            padding: 16px 18px;
+        }
+        .detail-tech-card .k {
+            font-size: 0.72rem;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+        .detail-tech-card .v {
+            font-size: 1rem;
+            font-family: var(--font-mono);
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .detail-formula-box {
+            background: rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 16px;
+            padding: 26px 30px;
+            font-family: var(--font-mono);
+            font-size: 1.05rem;
+            color: #f0f0f2;
+            text-align: center;
+            overflow-x: auto;
+            letter-spacing: 0.01em;
+        }
+
+        .detail-arch-flow {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .detail-arch-step {
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            font-family: var(--font-mono);
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.07);
+            padding: 10px 16px;
+            border-radius: 10px;
+            color: #d1d1d6;
+        }
+        .detail-arch-arrow { color: rgba(255,255,255,0.25); font-size: 0.8rem; }
+
+        .detail-clinical-box {
+            font-size: 0.98rem;
+            line-height: 1.6;
+            color: #e5e5ea;
+            background: rgba(52, 199, 89, 0.06);
+            border-left: 3px solid var(--mamba-color);
+            padding: 16px 20px;
+            border-radius: 0 14px 14px 0;
+        }
+
+        .detail-footer-nav {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-top: 56px;
+            padding-top: 28px;
+            border-top: 1px solid rgba(255,255,255,0.07);
+        }
+
+        @media (max-width: 640px) {
+            .detail-overlay { width: 100vw; }
+            .detail-topbar { padding: 16px 20px; }
+            .detail-body { padding: 8px 20px 60px; }
+            .detail-title { font-size: 1.9rem; }
         }
     </style>
 </head>
@@ -657,6 +920,68 @@
             <div class="panel-section-title">Clinical Purpose</div>
             <div class="panel-clinical" id="p-clinical">Clinical block</div>
         </div>
+        <div class="panel-open-hint">Click card to open full detail page</div>
+    </div>
+
+    <!-- FULL SCREEN DETAIL EXPLORER -->
+    <div class="detail-scrim" id="detail-scrim"></div>
+    <div class="detail-overlay" id="detail-overlay" role="dialog" aria-modal="true">
+        <div class="detail-topbar">
+            <button class="detail-back-btn" id="detail-back-btn" onclick="closeDetailPage()">&larr; Back to Pipeline</button>
+            <div class="detail-nav-group">
+                <button class="detail-nav-btn" id="detail-prev-btn" onclick="navigateDetail(-1)">&larr; Previous</button>
+                <button class="detail-nav-btn" id="detail-next-btn" onclick="navigateDetail(1)">Next &rarr;</button>
+            </div>
+        </div>
+        <div class="detail-body">
+            <div class="detail-eyebrow" id="d-eyebrow">Category</div>
+            <h2 class="detail-title" id="d-title">Node Title</h2>
+            <p class="detail-desc" id="d-desc">Description</p>
+
+            <div class="detail-section">
+                <div class="detail-section-label">Illustration</div>
+                <div class="detail-illu-frame" id="d-illu"></div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-label">Pipeline Position</div>
+                <div class="position-track" id="d-position"></div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-label">Technical Information</div>
+                <div class="detail-tech-grid" id="d-tech"></div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-label">Mathematical Formula</div>
+                <div class="detail-formula-box" id="d-formula"></div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-label">Internal Architecture</div>
+                <div class="detail-arch-flow" id="d-arch"></div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-label">Research Figure</div>
+                <div class="detail-illu-frame" id="d-graph"></div>
+            </div>
+
+            <div class="detail-section">
+                <div class="detail-section-label">Clinical Purpose</div>
+                <div class="detail-clinical-box" id="d-clinical"></div>
+            </div>
+
+            <div class="detail-section-label" id="d-reference-label" style="margin-top:40px;">Reference</div>
+            <p class="panel-desc" id="d-reference" style="color:var(--text-secondary); font-size:0.85rem;"></p>
+
+            <div class="detail-footer-nav">
+                <button class="detail-nav-btn" onclick="navigateDetail(-1)">&larr; Previous</button>
+                <button class="detail-back-btn" onclick="closeDetailPage()">Back to Pipeline</button>
+                <button class="detail-nav-btn" onclick="navigateDetail(1)">Next &rarr;</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -814,6 +1139,224 @@
             }
         };
 
+        /* -------------------------------------------
+           RESEARCH-GRADE SVG FIGURE GENERATORS
+        ------------------------------------------- */
+        function svgWrap(inner, vb = "0 0 560 260") {
+            return `<svg viewBox="${vb}" xmlns="http://www.w3.org/2000/svg" width="100%">${inner}</svg>`;
+        }
+
+        function figEcgWaveform(color) {
+            return svgWrap(`
+                <line x1="20" y1="230" x2="540" y2="230" stroke="rgba(255,255,255,0.15)"/>
+                <line x1="20" y1="20" x2="20" y2="230" stroke="rgba(255,255,255,0.15)"/>
+                <path d="M20 130 h60 l8-10 l10 60 l10-90 l6 20 h50 l14-45 l10 70 l10-40 h190 l8-10 l10 60 l10-90 l6 20 h58"
+                    fill="none" stroke="${color}" stroke-width="2.5" stroke-linejoin="round"/>
+                <text x="270" y="252" fill="#86868b" font-size="12" font-family="JetBrains Mono" text-anchor="middle">Time (s)</text>
+            `);
+        }
+        function figBeforeAfter(color) {
+            return svgWrap(`
+                <text x="140" y="24" fill="#86868b" font-size="13" text-anchor="middle" font-family="Inter">Before</text>
+                <path d="M20 90 q10 -40 20 0 t20 -60 t20 70 t20 -10 t20 40 t20 -80 t20 60 t20 -20 t20 10 t20 -50" fill="none" stroke="#ff453a" stroke-width="1.5" transform="translate(0,20)"/>
+                <text x="400" y="24" fill="#86868b" font-size="13" text-anchor="middle" font-family="Inter">After</text>
+                <path d="M280 110 h30 l6-40 l8 55 l6-15 h230" fill="none" stroke="${color}" stroke-width="2.5" transform="translate(0,20)"/>
+                <line x1="260" y1="20" x2="260" y2="230" stroke="rgba(255,255,255,0.1)" stroke-dasharray="4 4"/>
+            `);
+        }
+        function figFreqResponse(color, cutoffLabel) {
+            return svgWrap(`
+                <line x1="30" y1="220" x2="540" y2="220" stroke="rgba(255,255,255,0.15)"/>
+                <line x1="30" y1="20" x2="30" y2="220" stroke="rgba(255,255,255,0.15)"/>
+                <path d="M30 60 C 130 60, 160 200, 260 200 S 420 210, 540 212" fill="none" stroke="${color}" stroke-width="2.5"/>
+                <line x1="220" y1="20" x2="220" y2="220" stroke="${color}" stroke-dasharray="3 3" opacity="0.5"/>
+                <text x="220" y="14" fill="${color}" font-size="12" text-anchor="middle" font-family="JetBrains Mono">${cutoffLabel}</text>
+                <text x="285" y="245" fill="#86868b" font-size="12" text-anchor="middle" font-family="JetBrains Mono">Frequency (Hz)</text>
+                <text x="18" y="120" fill="#86868b" font-size="12" text-anchor="middle" font-family="JetBrains Mono" transform="rotate(-90 18 120)">Gain (dB)</text>
+            `);
+        }
+        function figSlidingWindow(color) {
+            return svgWrap(`
+                <path d="M20 130 q10 -50 20 0 t20 -70 t20 80 t20 -20 t20 50 t20 -90 t20 70 t20 -30 t20 15 t20 -60 t20 40 t20 -20 t20 30 t20 -50 t20 60" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.5"/>
+                <rect x="60" y="30" width="120" height="170" rx="8" fill="${color}" opacity="0.12" stroke="${color}" stroke-width="2"/>
+                <rect x="220" y="30" width="120" height="170" rx="8" fill="none" stroke="${color}" stroke-width="1" opacity="0.35" stroke-dasharray="4 4"/>
+                <rect x="380" y="30" width="120" height="170" rx="8" fill="none" stroke="${color}" stroke-width="1" opacity="0.2" stroke-dasharray="4 4"/>
+                <text x="120" y="220" fill="${color}" font-size="12" text-anchor="middle" font-family="JetBrains Mono">active window</text>
+            `);
+        }
+        function figFeatureMap(color) {
+            let cells = '';
+            for (let r = 0; r < 4; r++) for (let c = 0; c < 10; c++) {
+                const o = (Math.sin(r * 1.7 + c * 0.9) + 1) / 2;
+                cells += `<rect x="${30 + c * 50}" y="${30 + r * 45}" width="44" height="39" rx="4" fill="${color}" opacity="${(o * 0.7 + 0.08).toFixed(2)}"/>`;
+            }
+            return svgWrap(cells, "0 0 530 220");
+        }
+        function figConvPool(color) {
+            return svgWrap(`
+                <rect x="20" y="90" width="60" height="60" rx="6" fill="none" stroke="${color}" stroke-width="2"/>
+                <text x="50" y="170" fill="#86868b" font-size="11" text-anchor="middle" font-family="JetBrains Mono">input</text>
+                <rect x="60" y="100" width="16" height="16" fill="${color}" opacity="0.5"/>
+                <path d="M96 118 h50" stroke="rgba(255,255,255,0.3)" marker-end="url(#arrow)"/>
+                <rect x="160" y="70" width="90" height="100" rx="6" fill="${color}" opacity="0.15" stroke="${color}" stroke-width="2"/>
+                <text x="205" y="190" fill="#86868b" font-size="11" text-anchor="middle" font-family="JetBrains Mono">conv1d</text>
+                <path d="M264 118 h50" stroke="rgba(255,255,255,0.3)"/>
+                <rect x="330" y="90" width="45" height="60" rx="6" fill="${color}" opacity="0.3" stroke="${color}" stroke-width="2"/>
+                <text x="352" y="170" fill="#86868b" font-size="11" text-anchor="middle" font-family="JetBrains Mono">pool</text>
+                <path d="M389 118 h50" stroke="rgba(255,255,255,0.3)"/>
+                <circle cx="480" cy="118" r="22" fill="none" stroke="${color}" stroke-width="2"/>
+                <text x="480" y="200" fill="#86868b" font-size="11" text-anchor="middle" font-family="JetBrains Mono">residual</text>
+            `);
+        }
+        function figStateSpace(color) {
+            let dots = '';
+            for (let i = 0; i < 9; i++) {
+                dots += `<circle cx="${50 + i * 55}" cy="${60 + (i % 3) * 45}" r="9" fill="${color}" opacity="0.8"/>`;
+                if (i > 0) dots += `<path d="M${50 + (i - 1) * 55} ${60 + ((i - 1) % 3) * 45} L ${50 + i * 55} ${60 + (i % 3) * 45}" stroke="${color}" stroke-width="1.5" opacity="0.4"/>`;
+            }
+            return svgWrap(dots, "0 0 560 220");
+        }
+        function figMLPNet(color) {
+            const layers = [3, 5, 5, 3];
+            let nodes = '', lines = '';
+            const xs = [70, 220, 340, 470];
+            layers.forEach((n, li) => {
+                const ys = Array.from({length: n}, (_, i) => 40 + i * (180 / (n - 1 || 1)));
+                ys.forEach((y, ni) => {
+                    nodes += `<circle cx="${xs[li]}" cy="${y}" r="9" fill="${color}" opacity="0.85"/>`;
+                    if (li > 0) {
+                        const prevN = layers[li - 1];
+                        const prevYs = Array.from({length: prevN}, (_, i) => 40 + i * (180 / (prevN - 1 || 1)));
+                        prevYs.forEach(py => {
+                            lines += `<line x1="${xs[li-1]}" y1="${py}" x2="${xs[li]}" y2="${y}" stroke="${color}" stroke-width="0.7" opacity="0.18"/>`;
+                        });
+                    }
+                });
+            });
+            return svgWrap(lines + nodes, "0 0 540 220");
+        }
+        function figVectorBars(color, dims) {
+            let bars = '';
+            for (let i = 0; i < dims; i++) {
+                const h = 30 + Math.abs(Math.sin(i * 0.6)) * 130;
+                bars += `<rect x="${20 + i * (500 / dims)}" y="${190 - h}" width="${400/dims}" height="${h}" fill="${color}" opacity="0.75" rx="2"/>`;
+            }
+            return svgWrap(bars + `<line x1="15" y1="190" x2="530" y2="190" stroke="rgba(255,255,255,0.15)"/>`, "0 0 540 210");
+        }
+        function figFusion() {
+            return svgWrap(`
+                <rect x="20" y="30" width="130" height="46" rx="8" fill="var(--cnn-color)" opacity="0.18" stroke="var(--cnn-color)"/>
+                <text x="85" y="58" fill="var(--cnn-color)" font-size="12" text-anchor="middle" font-family="JetBrains Mono">CNN · 128d</text>
+                <rect x="20" y="97" width="130" height="46" rx="8" fill="var(--mamba-color)" opacity="0.18" stroke="var(--mamba-color)"/>
+                <text x="85" y="125" fill="var(--mamba-color)" font-size="12" text-anchor="middle" font-family="JetBrains Mono">Mamba · 128d</text>
+                <rect x="20" y="164" width="130" height="46" rx="8" fill="var(--mlp-color)" opacity="0.18" stroke="var(--mlp-color)"/>
+                <text x="85" y="192" fill="var(--mlp-color)" font-size="12" text-anchor="middle" font-family="JetBrains Mono">MLP · 64d</text>
+                <path d="M150 53 L 260 120" stroke="var(--cnn-color)" stroke-width="1.5" opacity="0.6"/>
+                <path d="M150 120 L 260 120" stroke="var(--mamba-color)" stroke-width="1.5" opacity="0.6"/>
+                <path d="M150 187 L 260 120" stroke="var(--mlp-color)" stroke-width="1.5" opacity="0.6"/>
+                <circle cx="260" cy="120" r="10" fill="var(--global-accent)"/>
+                <rect x="330" y="90" width="190" height="60" rx="8" fill="var(--global-accent)" opacity="0.18" stroke="var(--global-accent)"/>
+                <text x="425" y="125" fill="var(--global-accent)" font-size="13" text-anchor="middle" font-family="JetBrains Mono">320-dim Vector</text>
+                <path d="M270 120 h55" stroke="var(--global-accent)" stroke-width="1.5"/>
+            `);
+        }
+        function figSoftmax() {
+            const labels = ['NSR', 'PVC', 'SVT', 'CHF', 'AF'];
+            const vals = [0.72, 0.09, 0.05, 0.03, 0.11];
+            let bars = '';
+            labels.forEach((l, i) => {
+                const h = vals[i] * 400;
+                const col = i === 0 ? 'var(--mamba-color)' : 'rgba(255,255,255,0.25)';
+                bars += `<rect x="${40 + i * 100}" y="${210 - h}" width="60" height="${h}" fill="${col}" rx="4"/>`;
+                bars += `<text x="${70 + i * 100}" y="230" fill="#d1d1d6" font-size="12" text-anchor="middle" font-family="JetBrains Mono">${l}</text>`;
+                bars += `<text x="${70 + i * 100}" y="${200 - h}" fill="#fff" font-size="11" text-anchor="middle" font-family="JetBrains Mono">${(vals[i]*100).toFixed(0)}%</text>`;
+            });
+            return svgWrap(bars, "0 0 540 250");
+        }
+        function figROC(color) {
+            return svgWrap(`
+                <line x1="40" y1="200" x2="500" y2="200" stroke="rgba(255,255,255,0.15)"/>
+                <line x1="40" y1="20" x2="40" y2="200" stroke="rgba(255,255,255,0.15)"/>
+                <line x1="40" y1="200" x2="500" y2="20" stroke="rgba(255,255,255,0.15)" stroke-dasharray="4 4"/>
+                <path d="M40 200 C 80 90, 150 40, 500 20" fill="none" stroke="${color}" stroke-width="2.5"/>
+                <text x="270" y="240" fill="#86868b" font-size="12" text-anchor="middle" font-family="JetBrains Mono">False Positive Rate</text>
+                <text x="16" y="110" fill="#86868b" font-size="12" text-anchor="middle" font-family="JetBrains Mono" transform="rotate(-90 16 110)">True Positive Rate</text>
+                <text x="400" y="60" fill="${color}" font-size="13" font-family="JetBrains Mono">AUC = 0.96</text>
+            `);
+        }
+        function figConfusion() {
+            const labels = ['NSR','PVC','SVT','CHF','AF'];
+            const matrix = [[92,3,2,1,2],[4,88,3,2,3],[2,4,90,2,2],[1,2,3,91,3],[3,3,2,3,89]];
+            let cells = '';
+            const cell = 78, ox = 90, oy = 20;
+            labels.forEach((l, r) => {
+                cells += `<text x="${ox - 10}" y="${oy + r * cell + cell/2 + 4}" fill="#86868b" font-size="11" text-anchor="end" font-family="JetBrains Mono">${l}</text>`;
+                cells += `<text x="${ox + r * cell + cell/2}" y="12" fill="#86868b" font-size="11" text-anchor="middle" font-family="JetBrains Mono">${l}</text>`;
+                matrix[r].forEach((v, c) => {
+                    const op = v / 100;
+                    cells += `<rect x="${ox + c*cell}" y="${oy + r*cell}" width="${cell-2}" height="${cell-2}" rx="4" fill="var(--global-accent)" opacity="${(op*0.85+0.05).toFixed(2)}"/>`;
+                    cells += `<text x="${ox + c*cell + cell/2}" y="${oy + r*cell + cell/2 + 4}" fill="#fff" font-size="12" text-anchor="middle" font-family="JetBrains Mono">${v}</text>`;
+                });
+            });
+            return svgWrap(cells, "0 0 480 420");
+        }
+        function figTensorShape(color, shape) {
+            return svgWrap(`
+                <rect x="30" y="90" width="500" height="50" rx="10" fill="${color}" opacity="0.15" stroke="${color}" stroke-width="2"/>
+                <text x="280" y="122" fill="${color}" font-size="16" text-anchor="middle" font-family="JetBrains Mono">${shape}</text>
+            `, "0 0 560 220");
+        }
+
+        /* -------------------------------------------
+           EXTENDED RESEARCH / DETAIL PAGE METADATA
+        ------------------------------------------- */
+        const nodeMetaExt = {
+            'root-1': { inputShape: 'N/A (raw feed)', outputShape: '[leads × N]', parameters: '0', model: 'Signal Acquisition Frontend', paper: 'Kligfield et al., "Recommendations for ECG Standardization", Circulation (2007)', formula: 'v(t) = V_lead(t), t ∈ [0, ∞)', graph: figEcgWaveform('#ffffff') },
+            'root-2': { inputShape: '[leads × N] @ variable Hz', outputShape: '[leads × N] @ 360Hz', parameters: '0 (non-learned)', model: 'Adaptive Median Resampler', paper: 'Pan & Tompkins, IEEE Trans. Biomed. Eng. (1985)', formula: 'x̂[n] = median( x[n-k..n+k] ), fs = 360 Hz', graph: figBeforeAfter('#ffffff') },
+            'b1-1': { inputShape: '[1 × N] @ 360Hz', outputShape: '[1 × N] filtered', parameters: '0 (IIR, order 4)', model: 'Butterworth Bandpass', paper: 'Sörnmo & Laguna, "Bioelectrical Signal Processing" (2005)', formula: 'H(s) = 1 / (1 + (s/ω_c)^{2n}),  0.5–50 Hz', graph: figFreqResponse('var(--cnn-color)', '0.5–50 Hz') },
+            'b1-2': { inputShape: '[1 × N]', outputShape: '[1 × 1080]', parameters: '0 (windowing op)', model: 'Fixed-Length Segmenter', paper: 'Hannun et al., Nature Medicine (2019)', formula: 'x_seg = x[ t : t + 1080 ],  t += stride', graph: figSlidingWindow('var(--cnn-color)') },
+            'b1-3': { inputShape: '[1 × 1080]', outputShape: '[128 × 1]', parameters: '≈ 1.2M', model: 'ResNet1D (CNN Branch)', paper: 'He et al., "Deep Residual Learning", CVPR (2016)', formula: 'y = ReLU( F(x, {W_i}) + x )', graph: figConvPool('var(--cnn-color)') },
+            'b1-4': { inputShape: '[128 × 1]', outputShape: '[128 × 1] (L2-normalized)', parameters: '≈ 16.5K (proj + norm)', model: 'Morphology Embedding Head', paper: 'Chen et al., "SimCLR", ICML (2020)', formula: 'ẑ = z / ‖z‖₂,  z ∈ ℝ¹²⁸', graph: figVectorBars('var(--cnn-color)', 24) },
+            'b2-1': { inputShape: '[1 × N] @ 360Hz', outputShape: '[1 × N] filtered', parameters: '0 (IIR, order 4)', model: 'Butterworth Lowpass', paper: 'Sörnmo & Laguna, "Bioelectrical Signal Processing" (2005)', formula: 'H(s) = 1 / (1 + (s/ω_c)^{2n}),  f_c = 9 Hz', graph: figFreqResponse('var(--mamba-color)', '9 Hz cutoff') },
+            'b2-2': { inputShape: '[1 × N]', outputShape: '[1 × 3600]', parameters: '0 (windowing op)', model: 'Long-Context Windower', paper: 'Gu & Dao, "Mamba", arXiv (2023)', formula: 'x_win = x[ t : t + 3600 ],  stride = 360', graph: figSlidingWindow('var(--mamba-color)') },
+            'b2-3': { inputShape: '[1 × 3600]', outputShape: '[128 × 1]', parameters: '≈ 0.9M', model: 'Mamba (Selective SSM)', paper: 'Gu & Dao, "Mamba: Linear-Time Sequence Modeling", arXiv (2023)', formula: 'h_t = Āh_{t-1} + B̄x_t,  y_t = Ch_t   (Ā, B̄ input-dependent)', graph: figStateSpace('var(--mamba-color)') },
+            'b2-4': { inputShape: '[128 × 1]', outputShape: '[128 × 1] (L2-normalized)', parameters: '≈ 16.5K (proj + norm)', model: 'Rhythm Embedding Head', paper: 'Gu & Dao, "Mamba", arXiv (2023)', formula: 'ẑ = z / ‖z‖₂,  z ∈ ℝ¹²⁸', graph: figVectorBars('var(--mamba-color)', 24) },
+            'b3-1': { inputShape: '[1 × N] @ 360Hz', outputShape: 'R-peak index list', parameters: '0 (rule-based)', model: 'Pan-Tompkins Detector', paper: 'Pan & Tompkins, IEEE Trans. Biomed. Eng. (1985)', formula: 'y[n] = ( d/dt x[n] )² ⊛ w_MA[n]', graph: figEcgWaveform('var(--mlp-color)') },
+            'b3-2': { inputShape: 'R-peak index list', outputShape: '[1 × 3]', parameters: '0 (analytic)', model: 'Clinical Feature Extractor', paper: 'de Chazal et al., IEEE Trans. Biomed. Eng. (2004)', formula: 'RR_i = t_{R_i} − t_{R_{i-1}}', graph: figTensorShape('var(--mlp-color)', '[RR, Amp, QRS] → 1 × 3') },
+            'b3-3': { inputShape: '[1 × 3]', outputShape: '[64 × 1]', parameters: '≈ 12.7K', model: 'MLP (Dense Branch)', paper: 'Rumelhart et al., Nature (1986)', formula: 'h = ReLU(W₃·ReLU(W₂·ReLU(W₁x + b₁) + b₂) + b₃)', graph: figMLPNet('var(--mlp-color)') },
+            'b3-4': { inputShape: '[64 × 1]', outputShape: '[64 × 1] (L2-normalized)', parameters: '≈ 4.2K (proj + norm)', model: 'Geometry Embedding Head', paper: 'de Chazal et al., IEEE Trans. Biomed. Eng. (2004)', formula: 'ẑ = z / ‖z‖₂,  z ∈ ℝ⁶⁴', graph: figVectorBars('var(--mlp-color)', 16) },
+            'u-1': { inputShape: '128d + 128d + 64d', outputShape: '[320 × 1]', parameters: '0 (concat op)', model: 'Multi-View Concatenation', paper: 'Baltrušaitis et al., "Multimodal ML: A Survey", IEEE TPAMI (2018)', formula: 'z_fused = [ z_cnn ⊕ z_mamba ⊕ z_mlp ] ∈ ℝ³²⁰', graph: figFusion() },
+            'u-2': { inputShape: '[320 × 1]', outputShape: '[5 × 1] logits', parameters: '≈ 115.6K', model: 'Dense Classification Head', paper: 'Srivastava et al., "Dropout", JMLR (2014)', formula: 'ŷ = softmax( W₃·Drop₀.₃(ReLU(W₂·Drop₀.₄(ReLU(W₁x)))) )', graph: figMLPNet('var(--global-accent)') },
+            'u-3': { inputShape: '[5 × 1] logits', outputShape: '1 class label', parameters: '0 (argmax)', model: 'Diagnostic Decision Layer', paper: 'Hannun et al., Nature Medicine (2019)', formula: 'ŷ_class = argmax_i softmax(z)_i', graph: figSoftmax() }
+        };
+
+        const researchFigures = { roc: figROC('var(--mamba-color)'), confusion: figConfusion() };
+        // Attach a secondary research figure (ROC / confusion matrix) to terminal + fusion nodes for deeper analysis
+        nodeMetaExt['u-2'].graph2 = researchFigures.confusion;
+        nodeMetaExt['u-3'].graph2 = researchFigures.roc;
+
+        const stepLabelMap = {
+            'root-1': 'Raw ECG', 'root-2': 'Preprocessing',
+            'b1-1': 'Bandpass Filter', 'b1-2': '3-Sec Segmentation', 'b1-3': 'CNN Branch', 'b1-4': 'CNN Embedding',
+            'b2-1': 'Lowpass Filter', 'b2-2': '10-Sec Window', 'b2-3': 'Mamba Branch', 'b2-4': 'Mamba Embedding',
+            'b3-1': 'R-Peak Detection', 'b3-2': 'Feature Extraction', 'b3-3': 'MLP Branch', 'b3-4': 'MLP Embedding',
+            'u-1': 'Feature Fusion', 'u-2': 'Classification Head', 'u-3': 'Final Prediction'
+        };
+
+        function buildPositionChain(key) {
+            let chain;
+            if (key.startsWith('b')) {
+                const branch = key.split('-')[0];
+                chain = ['root-1', 'root-2', `${branch}-1`, `${branch}-2`, `${branch}-3`, `${branch}-4`, 'u-1', 'u-2', 'u-3'];
+            } else {
+                chain = ['root-1', 'root-2', '__parallel__', 'u-1', 'u-2', 'u-3'];
+            }
+            return chain.map(k => k === '__parallel__'
+                ? { label: 'Parallel CNN / Mamba / MLP Branches', current: false, key: null }
+                : { label: stepLabelMap[k] || k, current: k === key, key: k }
+            );
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             initSVGPaths();
             setupNodeInteraction();
@@ -905,6 +1448,11 @@
             const card = e.currentTarget;
             if (card.classList.contains('clickable-target')) {
                 executeTargetGroup();
+                return;
+            }
+            if (card.classList.contains('visible') || card.classList.contains('active-node')) {
+                const key = card.getAttribute('data-node');
+                openDetailPage(key);
             }
         }
 
@@ -1027,6 +1575,10 @@
         function resetPipeline() {
             currentGroupIndex = -1;
 
+            if (detailOpen) closeDetailPage();
+            cancelPanelHide();
+            document.getElementById('info-panel').classList.remove('visible');
+
             document.querySelectorAll('.connection-path').forEach(p => {
                 p.classList.remove('active');
                 p.style.stroke = 'rgba(255, 255, 255, 0.05)';
@@ -1045,6 +1597,25 @@
             setNextClickableTarget();
         }
 
+        let panelHideTimer = null;
+        const PANEL_HIDE_DELAY = 3000;
+
+        function cancelPanelHide() {
+            if (panelHideTimer) {
+                clearTimeout(panelHideTimer);
+                panelHideTimer = null;
+            }
+        }
+
+        function scheduleHidePanel() {
+            cancelPanelHide();
+            panelHideTimer = setTimeout(() => {
+                const panel = document.getElementById('info-panel');
+                panel.classList.remove('visible');
+                panelHideTimer = null;
+            }, PANEL_HIDE_DELAY);
+        }
+
         function setupHoverActions() {
             const panel = document.getElementById('info-panel');
             const cards = document.querySelectorAll('.node-card');
@@ -1054,6 +1625,7 @@
                     const nodeKey = card.getAttribute('data-node');
                     if (!card.classList.contains('visible') && !card.classList.contains('active-node')) return;
 
+                    cancelPanelHide();
                     populatePanel(nodeKey);
                     panel.classList.add('visible');
                     
@@ -1085,9 +1657,13 @@
                 });
 
                 card.addEventListener('mouseleave', () => {
-                    panel.classList.remove('visible');
+                    scheduleHidePanel();
                 });
             });
+
+            // Keep the panel open while the pointer is over it; resume the hide timer on leave
+            panel.addEventListener('mouseenter', cancelPanelHide);
+            panel.addEventListener('mouseleave', scheduleHidePanel);
         }
 
         function populatePanel(key) {
@@ -1129,8 +1705,191 @@
             });
         }
 
+        /* -------------------------------------------
+           FULL-SCREEN DETAIL EXPLORER LOGIC
+        ------------------------------------------- */
+        const detailOrder = nodeGroups.flat();
+        let currentDetailKey = null;
+        let detailOpen = false;
+
+        function isNodeRevealed(key) {
+            const card = document.getElementById(`node-${key}`);
+            return !!card && (card.classList.contains('visible') || card.classList.contains('active-node'));
+        }
+
+        function openDetailPage(key) {
+            if (!nodeMetadata[key]) return;
+
+            document.getElementById('info-panel').classList.remove('visible');
+            cancelPanelHide();
+
+            currentDetailKey = key;
+            populateDetailPage(key);
+
+            const scrim = document.getElementById('detail-scrim');
+            const overlay = document.getElementById('detail-overlay');
+
+            document.body.classList.add('detail-lock');
+            document.querySelector('.pipeline-container').classList.add('blurred');
+            document.querySelector('header').classList.add('blurred');
+
+            overlay.style.visibility = 'visible';
+            overlay.scrollTop = 0;
+            detailOpen = true;
+
+            gsap.to(scrim, { opacity: 1, pointerEvents: 'auto', duration: 0.35, ease: 'power2.out' });
+            gsap.fromTo(overlay,
+                { x: '100%' },
+                { x: '0%', duration: 0.55, ease: 'power3.out' }
+            );
+            gsap.fromTo('.detail-body > *',
+                { opacity: 0, y: 16 },
+                { opacity: 1, y: 0, duration: 0.5, stagger: 0.035, delay: 0.15, ease: 'power2.out' }
+            );
+        }
+
+        function closeDetailPage() {
+            const scrim = document.getElementById('detail-scrim');
+            const overlay = document.getElementById('detail-overlay');
+
+            gsap.to(scrim, { opacity: 0, pointerEvents: 'none', duration: 0.3, ease: 'power2.in' });
+            gsap.to(overlay, {
+                x: '100%',
+                duration: 0.45,
+                ease: 'power3.in',
+                onComplete: () => {
+                    overlay.style.visibility = 'hidden';
+                    document.body.classList.remove('detail-lock');
+                    document.querySelector('.pipeline-container').classList.remove('blurred');
+                    document.querySelector('header').classList.remove('blurred');
+                }
+            });
+            detailOpen = false;
+            currentDetailKey = null;
+        }
+
+        function navigateDetail(direction) {
+            if (!currentDetailKey) return;
+            let idx = detailOrder.indexOf(currentDetailKey);
+            let nextIdx = idx + direction;
+
+            // Only land on nodes that have actually been revealed in the pipeline
+            while (nextIdx >= 0 && nextIdx < detailOrder.length && !isNodeRevealed(detailOrder[nextIdx])) {
+                nextIdx += direction;
+            }
+            if (nextIdx < 0 || nextIdx >= detailOrder.length) return;
+
+            const newKey = detailOrder[nextIdx];
+            currentDetailKey = newKey;
+
+            const overlay = document.getElementById('detail-overlay');
+            gsap.to('.detail-body', {
+                opacity: 0, x: direction > 0 ? -24 : 24, duration: 0.2, ease: 'power2.in',
+                onComplete: () => {
+                    populateDetailPage(newKey);
+                    overlay.scrollTop = 0;
+                    gsap.fromTo('.detail-body',
+                        { opacity: 0, x: direction > 0 ? 24 : -24 },
+                        { opacity: 1, x: 0, duration: 0.3, ease: 'power2.out' }
+                    );
+                }
+            });
+        }
+
+        function populateDetailPage(key) {
+            const data = nodeMetadata[key];
+            const ext = nodeMetaExt[key] || {};
+            if (!data) return;
+
+            document.getElementById('d-eyebrow').innerText = data.type;
+            document.getElementById('d-eyebrow').style.color = data.color;
+            document.getElementById('d-title').innerText = data.title;
+            document.getElementById('d-desc').innerText = data.desc;
+            document.getElementById('d-illu').innerHTML = data.illu.replace('width="50" height="30"', 'width="220" height="130"');
+            document.getElementById('d-clinical').innerText = data.clinical;
+            document.getElementById('d-clinical').style.borderLeftColor = data.color;
+
+            // Pipeline position breadcrumb
+            const posTrack = document.getElementById('d-position');
+            posTrack.innerHTML = '';
+            buildPositionChain(key).forEach((step, idx, arr) => {
+                const el = document.createElement('div');
+                el.className = 'position-step' + (step.current ? ' current' : '');
+                el.innerText = step.label;
+                posTrack.appendChild(el);
+                if (idx < arr.length - 1) {
+                    const arrow = document.createElement('span');
+                    arrow.className = 'position-arrow';
+                    arrow.innerHTML = '&rarr;';
+                    posTrack.appendChild(arrow);
+                }
+            });
+
+            // Technical information grid
+            const techGrid = document.getElementById('d-tech');
+            techGrid.innerHTML = '';
+            const techEntries = Object.entries(data.tech).map(([k, v]) => [k, v]);
+            techEntries.push(['Input Shape', ext.inputShape || '—']);
+            techEntries.push(['Output Shape', ext.outputShape || '—']);
+            techEntries.push(['Parameters', ext.parameters || '—']);
+            techEntries.push(['Model', ext.model || '—']);
+            techEntries.forEach(([k, v]) => {
+                const card = document.createElement('div');
+                card.className = 'detail-tech-card';
+                card.innerHTML = `<div class="k">${k}</div><div class="v">${v}</div>`;
+                techGrid.appendChild(card);
+            });
+
+            // Formula
+            document.getElementById('d-formula').innerText = ext.formula || '—';
+
+            // Architecture flow
+            const archFlow = document.getElementById('d-arch');
+            archFlow.innerHTML = '';
+            data.arch.forEach((step, idx) => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'detail-arch-step';
+                stepDiv.innerText = step;
+                archFlow.appendChild(stepDiv);
+                if (idx < data.arch.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'detail-arch-arrow';
+                    arrow.innerHTML = '&darr;';
+                    archFlow.appendChild(arrow);
+                }
+            });
+
+            // Research figure(s)
+            const graphBox = document.getElementById('d-graph');
+            graphBox.innerHTML = (ext.graph || '') + (ext.graph2 ? `<div style="height:24px;"></div>${ext.graph2}` : '');
+
+            // Reference
+            document.getElementById('d-reference').innerText = ext.paper || 'No reference attached.';
+
+            // Nav button states
+            const idx = detailOrder.indexOf(key);
+            let prevAvailable = false, nextAvailable = false;
+            for (let i = idx - 1; i >= 0; i--) { if (isNodeRevealed(detailOrder[i])) { prevAvailable = true; break; } }
+            for (let i = idx + 1; i < detailOrder.length; i++) { if (isNodeRevealed(detailOrder[i])) { nextAvailable = true; break; } }
+            document.querySelectorAll('#detail-prev-btn, .detail-footer-nav .detail-nav-btn:first-child').forEach(b => b.disabled = !prevAvailable);
+            document.querySelectorAll('#detail-next-btn, .detail-footer-nav .detail-nav-btn:last-child').forEach(b => b.disabled = !nextAvailable);
+        }
+
         function setupAccessibility() {
             document.addEventListener('keydown', (e) => {
+                if (detailOpen) {
+                    if (e.key === 'Escape') {
+                        closeDetailPage();
+                    } else if (e.key === 'ArrowRight') {
+                        e.preventDefault();
+                        navigateDetail(1);
+                    } else if (e.key === 'ArrowLeft') {
+                        e.preventDefault();
+                        navigateDetail(-1);
+                    }
+                    return;
+                }
+
                 if (e.key === 'ArrowRight') {
                     const nextGroupIndex = currentGroupIndex + 1;
                     if (nextGroupIndex < nodeGroups.length) {
@@ -1138,6 +1897,8 @@
                     }
                 }
             });
+
+            document.getElementById('detail-scrim').addEventListener('click', closeDetailPage);
         }
     </script>
 </body>
